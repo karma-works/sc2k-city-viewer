@@ -42,9 +42,9 @@ This document outlines the plan to convert OpenSC2K from an Electron desktop app
 - RequestAnimationFrame for game loop
 
 **What Needs Replacement:**
-- Node.js `fs` module → Fetch API or File API
-- SQLite database → IndexedDB or in-memory structures
-- File dialogs → HTML file input elements
+- Node.js `fs` module → Fetch API for JSON/tilemap, FileReader API for user files
+- SQLite database (`better-sqlite3`) → sql.js (WebAssembly SQLite)
+- File dialogs → HTML5 FileReader API with user permission flow
 - Electron app lifecycle → Standard browser events
 
 ## Migration Strategy
@@ -245,7 +245,7 @@ export class Data {
 #### 0.6 Benefits of TypeScript Migration
 
 **During Web Migration:**
-- Catch undefined variables from removed Electron APIs
+- Catch undefined variables from removed Node.js APIs
 - Type-safe module imports (no silent failures)
 - IDE autocomplete for browser APIs (fetch, FileReader, etc.)
 - Detect missing properties when switching data sources
@@ -256,81 +256,204 @@ export class Data {
 - Catch bugs at compile time rather than runtime
 - Better code reviews with type information visible
 
-### Phase 1: Remove Electron Dependencies
+### Phase 1: Convert to Pure Web Application
 
-#### 1.1 Replace File System Access
+This phase removes all Electron-specific code and dependencies. The goal is a standalone web application that runs entirely in the browser without any desktop framework dependencies.
 
-**Current:**
+#### 1.1 Remove Electron-Specific Code
+
+**Files to Remove:**
+- `main.js` - Electron main process (no longer needed)
+- `package.json` Electron dependencies - Remove `electron`, `electron-builder`
+
+**Files to Modify:**
+- Remove all `require('electron')` calls
+- Remove `require('fs')` calls (use fetch/FileReader instead)
+- Remove `__dirname` references (use relative URLs)
+- Remove `process` object references
+
+#### 1.2 Replace File System Access with Fetch API
+
+**Current (Electron/Node.js):**
 ```javascript
 // js/graphics.js:114
 var tilemapJson = game.fs.readFileSync(__dirname + '/images/tilemap/tilemap.json');
 this.tilemap = JSON.parse(tilemapJson);
 ```
 
-**Migration:**
-```javascript
-// Use fetch API for web
-fetch('images/tilemap/tilemap.json')
-  .then(response => response.json())
-  .then(data => {
-    this.tilemap = data;
-  });
+**Migration (Web):**
+```typescript
+// src/graphics.ts
+async loadTilemaps(): Promise<void> {
+  const response = await fetch('/images/tilemap/tilemap.json');
+  this.tilemap = await response.json();
+}
 ```
 
-#### 1.2 Replace File Import Dialog
+#### 1.3 Implement File Import with HTML5 FileReader API
 
-**Current:**
-```javascript
-// js/import.js:83
-game.app.dialog.showOpenDialog((fileNames) => {
-  game.fs.readFile(fileNames[0], (err, data) => {
-    // parse file
-  });
-});
-```
+**User Permission & File Access Strategy:**
 
-**Migration:**
-```html
-<!-- Add to index.html -->
-<input type="file" id="sc2FileInput" accept=".sc2" style="display:none">
-<button onclick="document.getElementById('sc2FileInput').click()">Import City</button>
-```
+The HTML5 FileReader API requires explicit user action to access files. Unlike Electron's native dialog, we must design a clear permission flow:
 
-```javascript
-// js/import.js
-openFile: function() {
-  document.getElementById('sc2FileInput').addEventListener('change', (event) => {
-    const file = event.target.files[0];
+**Option A: File Input Button (Recommended)**
+```typescript
+// src/components/FileImport.ts
+export class FileImport {
+  private fileInput: HTMLInputElement;
+  
+  constructor(private onFileLoaded: (data: Uint8Array, filename: string) => void) {
+    this.fileInput = document.createElement('input');
+    this.fileInput.type = 'file';
+    this.fileInput.accept = '.sc2';
+    this.fileInput.style.display = 'none';
+    document.body.appendChild(this.fileInput);
+    
+    this.fileInput.addEventListener('change', this.handleFileSelect.bind(this));
+  }
+  
+  open(): void {
+    // Reset input to allow selecting same file again
+    this.fileInput.value = '';
+    this.fileInput.click();
+  }
+  
+  private handleFileSelect(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    
     const reader = new FileReader();
+    
     reader.onload = (e) => {
-      const bytes = new Uint8Array(e.target.result);
-      this.parse(bytes);
+      const bytes = new Uint8Array(e.target?.result as ArrayBuffer);
+      this.onFileLoaded(bytes, file.name);
     };
+    
+    reader.onerror = (e) => {
+      console.error('FileReader error:', e);
+      // Handle error gracefully
+    };
+    
     reader.readAsArrayBuffer(file);
+  }
+}
+```
+
+**UI Integration:**
+```typescript
+// src/ui/FileImportButton.ts
+export function createImportButton(container: HTMLElement): void {
+  const button = document.createElement('button');
+  button.textContent = '📁 Import SC2 City';
+  button.className = 'import-button';
+  
+  button.addEventListener('click', () => {
+    game.fileImport.open();
   });
+  
+  container.appendChild(button);
 }
 ```
 
-#### 1.3 Remove Electron-Specific Initialization
+#### 1.4 Graceful Fallback for Unsupported Browsers
 
-**Current:**
-```javascript
-// js/game.js:21
-init: function() {
-  this.app = require('electron').remote;
-  this.fs = require('fs');
-  // ...
+**Feature Detection:**
+```typescript
+// src/utils/featureDetection.ts
+export interface BrowserCapabilities {
+  fileReader: boolean;
+  webAssembly: boolean;
+  fetch: boolean;
+  canvas: boolean;
+}
+
+export function detectCapabilities(): BrowserCapabilities {
+  return {
+    fileReader: typeof FileReader !== 'undefined',
+    webAssembly: typeof WebAssembly !== 'undefined',
+    fetch: typeof fetch !== 'undefined',
+    canvas: !!document.createElement('canvas').getContext('2d')
+  };
+}
+
+export function showFallbackMessage(capabilities: BrowserCapabilities): void {
+  const missing: string[] = [];
+  
+  if (!capabilities.fileReader) missing.push('File reading');
+  if (!capabilities.webAssembly) missing.push('WebAssembly (for database)');
+  if (!capabilities.fetch) missing.push('Network requests');
+  if (!capabilities.canvas) missing.push('Canvas rendering');
+  
+  if (missing.length > 0) {
+    const message = `
+      Your browser doesn't support: ${missing.join(', ')}
+      
+      Please use a modern browser:
+      • Chrome 57+
+      • Firefox 52+
+      • Safari 11+
+      • Edge 79+
+    `;
+    
+    alert(message);
+  }
 }
 ```
 
-**Migration:**
-```javascript
-// js/game.js
-init: function() {
-  // Remove Electron dependencies
-  // Use feature detection for web compatibility
-  this.isWeb = true;
-  // ...
+**Alternative: Drag & Drop (Enhanced UX)**
+```typescript
+// src/ui/DragDropHandler.ts
+export class DragDropHandler {
+  constructor(private onDrop: (file: File) => void) {
+    this.setupListeners();
+  }
+  
+  private setupListeners(): void {
+    // Prevent default browser behavior
+    document.addEventListener('dragover', (e) => e.preventDefault());
+    document.addEventListener('drop', this.handleDrop.bind(this));
+  }
+  
+  private handleDrop(event: DragEvent): void {
+    event.preventDefault();
+    
+    const file = event.dataTransfer?.files[0];
+    if (file && file.name.endsWith('.sc2')) {
+      this.onDrop(file);
+    } else {
+      console.warn('Please drop a .sc2 file');
+    }
+  }
+}
+```
+
+#### 1.5 Initialize as Pure Web App
+
+```typescript
+// src/game.ts
+export class Game {
+  private isWeb: boolean = true;
+  
+  public async init(): Promise<void> {
+    // Check browser capabilities first
+    const capabilities = detectCapabilities();
+    
+    if (!this.validateCapabilities(capabilities)) {
+      showFallbackMessage(capabilities);
+      return;
+    }
+    
+    // Initialize modules
+    await this.data.init();
+    await this.graphics.init();
+    this.setupEventListeners();
+    
+    this.start();
+  }
+  
+  private validateCapabilities(caps: BrowserCapabilities): boolean {
+    return caps.fileReader && caps.webAssembly && caps.fetch && caps.canvas;
+  }
 }
 ```
 
@@ -591,15 +714,19 @@ Create a clean API for embedding in web pages:
 6. Test all database queries in browser
 7. Add persistence option (optional: save to localStorage/IndexedDB)
 
-#### Step 2: Replace File System Calls (1 day)
-1. Replace `fs.readFileSync` with fetch
-2. Replace file dialog with HTML input
-3. Update import.ts for FileReader API
+#### Step 2: Replace File System Calls and Implement File Import (2 days)
+1. Replace `fs.readFileSync` with fetch API
+2. Create FileImport component with HTML5 FileReader API
+3. Design import button UI with clear user permission flow
+4. Implement graceful fallback for unsupported browsers
+5. Add drag & drop support for enhanced UX
+6. Update import.ts to handle file loading asynchronously
 
-#### Step 3: Remove Electron Dependencies (1 day)
-1. Remove `require('electron')` calls
-2. Remove `require('fs')` calls
-3. Update game.init()
+#### Step 3: Create Pure Web Application Structure (1 day)
+1. Remove `main.js` and all Node.js dependencies
+2. Update `package.json` to remove Electron packages
+3. Refactor game initialization for web-only mode
+4. Update all path references to use relative URLs
 
 #### Step 4: Create Build System (1-2 days)
 1. Set up simple HTTP server
@@ -616,7 +743,7 @@ Create a clean API for embedding in web pages:
 2. Performance optimization
 3. Memory usage review
 
-**Total Estimated Time: 10-13 days (includes TypeScript migration - sql.js reduces database migration effort)**
+**Total Estimated Time: 11-14 days (includes TypeScript migration and file import UI)**
 
 ## Technical Considerations
 
@@ -686,17 +813,24 @@ Create a clean API for embedding in web pages:
 
 ### Web Migration (Phases 1-5)
 
+#### Files to Remove
+
+- [ ] `main.js` → Delete (Electron main process no longer needed)
+- [ ] `package.json` → Remove `electron`, `electron-builder`, `better-sqlite3` dependencies
+
 #### Files to Modify
 
-- [ ] `main.js` → Remove entirely (not needed for web)
-- [ ] `src/game.ts` → Remove Electron/fs dependencies
-- [ ] `src/data.ts` → Replace `better-sqlite3` with sql.js (WebAssembly SQLite)
-- [ ] `src/import.ts` → Replace file dialog with HTML input
-- [ ] `src/graphics.ts` → Replace fs.readFileSync with fetch
-- [ ] `package.json` → Remove Electron dependencies
+- [ ] `src/game.ts` → Remove Node.js dependencies, init as pure web app
+- [ ] `src/data.ts` → Replace `better-sqlite3` with sql.js
+- [ ] `src/graphics.ts` → Replace `fs.readFileSync` with fetch API
+- [ ] `src/import.ts` → Refactor for FileReader API
 
 #### Files to Create
 
+- [ ] `src/components/FileImport.ts` → File import component with FileReader API
+- [ ] `src/components/FileImportButton.ts` → UI button for file import
+- [ ] `src/ui/DragDropHandler.ts` → Drag and drop file support
+- [ ] `src/utils/featureDetection.ts` → Browser capability detection
 - [ ] `src/types/index.ts` → Core type definitions
 - [ ] `src/types/sql-js.d.ts` → Type definitions for sql.js
 - [ ] `src/opensc2k.ts` → Public embedding API
@@ -710,6 +844,16 @@ Create a clean API for embedding in web pages:
 
 ### Testing Checklist
 
+#### File Import (New)
+- [ ] Import button is visible and clickable
+- [ ] File picker dialog opens on button click
+- [ ] Valid .sc2 files load successfully
+- [ ] Invalid files show error message
+- [ ] Drag and drop works for .sc2 files
+- [ ] FileReader errors are handled gracefully
+- [ ] Unsupported browsers show helpful fallback message
+
+#### Core Features
 - [ ] City import via file input
 - [ ] Tile rendering
 - [ ] Camera controls (arrow keys, rotation)
@@ -794,15 +938,38 @@ Migrating OpenSC2K to a pure web solution is feasible and involves:
 1. **Converting to TypeScript** (Phase 0) - Add strict type safety before migration
 2. **Replacing Node.js modules** with browser APIs (fetch, FileReader)
 3. **Using sql.js** to run SQLite in the browser (no schema changes needed)
-4. **Removing Electron shell** and running directly in browser
-5. **Creating an embedding API** for easy integration
+4. **Creating an embedding API** for easy integration
+5. **Implementing file import with user permission flow** using HTML5 FileReader API
 
 The core rendering engine (Canvas API) and game logic require minimal changes since they already use web-standard technologies. Using sql.js means the database layer requires only minimal modifications (swapping the Node.js SQLite binding for the WebAssembly version).
 
 **Next Steps:**
 1. **Convert to TypeScript** - Add types and strict configuration
 2. **Install and configure sql.js** - Test database loading in browser
-3. Begin incremental migration of modules (Electron removal)
-4. Test and iterate
+3. **Implement file import UI** - Create import button with FileReader API and graceful fallback
+4. Begin incremental migration of remaining modules
+5. Test and iterate
 
 This migration will enable OpenSC2K to be embedded in any webpage, shared via URL, and run on any device with a modern browser.
+
+### Migration Summary: Before vs After
+
+| Feature | Electron Desktop | Pure Web App |
+|---------|-----------------|--------------|
+| **Runtime** | Node.js + Electron | Browser only (Chrome, Firefox, Safari, Edge) |
+| **Database** | `better-sqlite3` (native) | `sql.js` (WebAssembly) |
+| **File Import** | Native file dialog | HTML5 FileReader API with button + drag-drop |
+| **File Loading** | `fs.readFileSync` | `fetch()` API |
+| **Window** | Electron BrowserWindow | Standard browser window/tab |
+| **Distribution** | Desktop installers | Web hosting / CDN |
+| **User Install** | Download and install | Visit URL instantly |
+| **Updates** | Auto-updater required | Refresh page |
+| **File Access** | Full filesystem (with permission) | User-selected files only |
+
+### Key Design Decisions
+
+1. **No Electron Runtime**: Pure browser environment for maximum compatibility
+2. **User Permission Flow**: Explicit file selection via button (no silent file access)
+3. **Graceful Degradation**: Clear error messages for unsupported browsers
+4. **sql.js for Database**: Zero schema changes, existing SQLite file works as-is
+5. **Drag & Drop Support**: Enhanced UX for power users while maintaining button fallback
