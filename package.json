@@ -4,9 +4,14 @@
   "description": "OpenSC2K - An Open Source remake of SimCity 2000",
   "homepage": "https://github.com/rage8885/OpenSC2K",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "start": "electron .",
-    "rebuild": "electron-rebuild -f -w better-sqlite3"
+    "rebuild": "electron-rebuild -f -w better-sqlite3",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "test:watch": "bun test --watch",
+    "typecheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -16,10 +21,15 @@
   "license": "GPL-3.0",
   "devDependencies": {
     "electron": "^1.8.2-beta.3",
-    "electron-rebuild": "^1.7.3"
+    "electron-rebuild": "^1.7.3",
+    "@types/bun": "latest"
   },
   "dependencies": {
     "better-sqlite3": "^4.1.0",
     "bmp-js": "^0.0.3"
+  },
+  "private": true,
+  "peerDependencies": {
+    "typescript": "^5"
   }
 }
