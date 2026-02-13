@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenSC2K Web</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        overflow: hidden;
+        display: block;
+        background-color: #371700;
+        font-family: Verdana, sans-serif;
+      }
+      #app {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+      #loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 24px;
+        text-align: center;
+      }
+      #error {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #ff6b6b;
+        font-size: 18px;
+        text-align: center;
+        max-width: 80%;
+        display: none;
+      }
+      #interfaceCanvas,
+      #primaryCanvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      #primaryCanvas {
+        z-index: 1;
+      }
+      #interfaceCanvas {
+        z-index: 2;
+      }
+      .import-button {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+        padding: 10px 20px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        border: 1px solid #555;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: Verdana, sans-serif;
+        font-size: 14px;
+      }
+      .import-button:hover {
+        background: rgba(0, 0, 0, 0.9);
+      }
+      .drag-over {
+        border: 3px dashed #4a9eff;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="loading">Loading OpenSC2K...</div>
+      <div id="error"></div>
+      <canvas id="primaryCanvas"></canvas>
+      <canvas id="interfaceCanvas"></canvas>
+    </div>
+    
+    <script type="module" src="/src/OpenSC2K.ts"></script>
+  </body>
+</html>
