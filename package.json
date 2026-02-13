@@ -25,8 +25,9 @@
     "vite": "^7.3.1"
   },
   "dependencies": {
-    "sql.js": "^1.10.3",
-    "bmp-js": "^0.0.3"
+    "@rollup/rollup-linux-arm64-gnu": "^4.57.1",
+    "bmp-js": "^0.0.3",
+    "sql.js": "^1.10.3"
   },
   "private": true,
   "peerDependencies": {

@@ -34,8 +34,8 @@ export interface Tile {
   rotate_1: number | null;
   rotate_2: number | null;
   rotate_3: number | null;
-  flip_h: number | null;
-  flip_alt_tile: number | null;
+  flip_h: string | number | null;
+  flip_alt_tile: string | number | null;
 }
 
 export interface SlopeData {
@@ -46,12 +46,12 @@ export interface SlopeData {
 }
 
 export interface PolygonData {
-  points?: number[][];
+  points?: { x: number; y: number }[];
   color?: string;
 }
 
 export interface LineData {
-  lines?: number[][];
+  lines?: { x1: number; y1: number; x2: number; y2: number }[];
   color?: string;
 }
 
@@ -99,8 +99,9 @@ export type ErrorHandler = (error: Error) => void;
 export interface TilemapEntry {
   x: number;
   y: number;
-  width: number;
-  height: number;
+  w: number;
+  h: number;
+  t: number;
 }
 
 export interface TilemapDefinition {

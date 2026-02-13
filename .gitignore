@@ -16,3 +16,6 @@ Thumbs.db
 images/test/
 images/test/*
 assets/*
+coverage/*
+dist/*
+public/*

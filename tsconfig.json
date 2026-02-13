@@ -30,6 +30,6 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["js/**/*", "tests/**/*", "src/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

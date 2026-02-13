@@ -5,6 +5,7 @@
     "": {
       "name": "OpenSC2K",
       "dependencies": {
+        "@rollup/rollup-linux-arm64-gnu": "^4.57.1",
         "bmp-js": "^0.0.3",
         "sql.js": "^1.10.3",
       },

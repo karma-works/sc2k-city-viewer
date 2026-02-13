@@ -1,13 +1,23 @@
 // Data layer using sql.js (WebAssembly SQLite)
 
 import type { Tile, MapCell, SlopeData, PolygonData, LineData } from './types/index.js';
-// @ts-expect-error sql.js doesn't have type definitions
+// @ts-expect-error sql.js types are complex
 import initSqlJs from 'sql.js';
-import type { Database, SqlJsStatic } from './types/sql-js';
+
+interface SqlJsResult {
+  Database: new (data?: ArrayLike<number> | null) => SqlJsDatabase;
+}
+
+interface SqlJsDatabase {
+  run(sql: string, params?: unknown[]): SqlJsDatabase;
+  exec(sql: string, params?: unknown[]): { columns?: string[]; lc?: string[]; values: unknown[][] }[];
+  prepare(sql: string, params?: unknown[]): unknown;
+  export(): Uint8Array;
+  close(): void;
+}
 
 export class Data {
-  private db: Database | null = null;
-  private SQL: SqlJsStatic | null = null;
+  private db: SqlJsDatabase | null = null;
   
   public cityId: number | null = null;
   public cityName: string | null = null;
@@ -21,20 +31,32 @@ export class Data {
   public async init(dbUrl: string = '/db/database.db'): Promise<void> {
     console.log('Initializing sql.js...');
     
-    this.SQL = await initSqlJs({
-      locateFile: () => '/sql-wasm.wasm'
+    const SQL: SqlJsResult = await initSqlJs({
+      locateFile: (file: string) => `/sql-wasm-browser.wasm`
     });
     
     console.log('Loading database from:', dbUrl);
     const response = await fetch(dbUrl);
     
     if (!response.ok) {
-      throw new Error(`Failed to load database: ${response.statusText}`);
+      throw new Error(`Failed to load database: ${response.status} ${response.statusText}`);
     }
     
     const buffer = await response.arrayBuffer();
-    if (!this.SQL) throw new Error('sql.js not initialized');
-    this.db = new this.SQL.Database(new Uint8Array(buffer));
+    console.log('Database buffer size:', buffer.byteLength);
+    
+    if (buffer.byteLength === 0) {
+      throw new Error('Database file is empty');
+    }
+    
+    this.db = new SQL.Database(new Uint8Array(buffer));
+    
+    if (!this.db) {
+      throw new Error('Failed to create database instance');
+    }
+    
+    const tableCheck = this.db.exec("SELECT name FROM sqlite_master WHERE type='table'");
+    console.log('Tables in database:', tableCheck);
     
     console.log('Database loaded successfully');
   }
@@ -46,13 +68,24 @@ export class Data {
     
     const result = this.db.exec('SELECT * FROM tiles ORDER BY id ASC');
     
+    console.log('Query result:', result);
+    
     if (result.length === 0) {
       console.warn('No tiles found in database');
       return;
     }
     
-    const columns = result[0].columns;
-    const rows = result[0].values;
+    const firstResult = result[0] as { columns?: string[]; lc?: string[]; values: unknown[][] };
+    const columns = firstResult.columns || firstResult.lc;
+    if (!firstResult || !columns || !firstResult.values) {
+      console.error('Invalid query result structure:', firstResult);
+      throw new Error('Database query returned invalid result structure');
+    }
+    
+    const rows = firstResult.values;
+    
+    console.log('Columns:', columns);
+    console.log('Row count:', rows.length);
     
     for (const row of rows) {
       const tile: Record<string, unknown> = {};
@@ -97,7 +130,7 @@ export class Data {
       return null;
     }
     
-    const cityColumns = cityResult[0].columns;
+    const cityColumns = cityResult[0].columns || cityResult[0].lc || [];
     const cityRow = cityResult[0].values[0];
     const city: Record<string, unknown> = {};
     cityColumns.forEach((col: string, i: number) => {
@@ -121,7 +154,7 @@ export class Data {
       return null;
     }
     
-    const mapColumns = mapResult[0].columns;
+    const mapColumns = mapResult[0].columns || mapResult[0].lc || [];
     const mapRows = mapResult[0].values;
     
     for (const row of mapRows) {
