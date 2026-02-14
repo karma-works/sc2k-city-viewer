@@ -1,0 +1,1 @@
+describe this tilemap as detailled as possible. can you describe each sprite individually? which sprites are series (animations)?  what are the image dimentions and sprite dimentions?

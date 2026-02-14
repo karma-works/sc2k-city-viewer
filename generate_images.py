@@ -8,6 +8,7 @@ import argparse
 import asyncio
 import base64
 import io
+import math
 import re
 import time
 from pathlib import Path
@@ -35,9 +36,30 @@ except ImportError:
 
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 DEFAULT_MODEL = "google/gemini-2.5-flash-image"
-DEFAULT_OUTPUT_SIZE = "2K"
-DEFAULT_ASPECT_RATIO = "1:1"
 IMAGE_SIZES_FILE = Path("images/image_sizes.json")
+
+
+def calculate_output_config(width: int, height: int) -> tuple[str, str]:
+    max_dim = max(width, height)
+    if max_dim <= 64:
+        output_size = "256x256"
+    elif max_dim <= 128:
+        output_size = "512x512"
+    elif max_dim <= 256:
+        output_size = "1024x1024"
+    elif max_dim <= 512:
+        output_size = "1K"
+    else:
+        output_size = "2K"
+
+    gcd = math.gcd(width, height)
+    ratio_w = width // gcd
+    ratio_h = height // gcd
+    ratio_w = min(ratio_w, 10)
+    ratio_h = min(ratio_h, 10)
+    aspect_ratio = f"{ratio_w}:{ratio_h}"
+
+    return output_size, aspect_ratio
 
 
 @dataclass
@@ -122,17 +144,16 @@ def generate_image(
     api_key: str,
     desc: AssetDescription,
     model: str = DEFAULT_MODEL,
-    output_size: str = DEFAULT_OUTPUT_SIZE,
-    aspect_ratio: str = DEFAULT_ASPECT_RATIO,
 ) -> Optional[bytes]:
     keywords_str = ", ".join(desc.keywords)
+    output_size, aspect_ratio = calculate_output_config(desc.width, desc.height)
 
     prompt = f"""Generate a single game asset image:
 Type: {desc.asset_type}
 Description: {keywords_str}
 
 Style: Pixel art, isometric view, high contrast, transparent background.
-Size: {desc.width}x{desc.height} pixels, centered."""
+IMPORTANT: The image must be exactly {desc.width}x{desc.height} pixels, centered in the canvas."""
 
     payload = {
         "model": model,
@@ -194,11 +215,10 @@ async def generate_image_async(
     api_key: str,
     desc: AssetDescription,
     model: str = DEFAULT_MODEL,
-    output_size: str = DEFAULT_OUTPUT_SIZE,
-    aspect_ratio: str = DEFAULT_ASPECT_RATIO,
     style_reference_image: Optional[bytes] = None,
 ) -> tuple[AssetDescription, Optional[bytes]]:
     keywords_str = ", ".join(desc.keywords)
+    output_size, aspect_ratio = calculate_output_config(desc.width, desc.height)
 
     if desc.grid_position and desc.grid_size:
         prompt = build_compositional_prompt(desc, keywords_str)
@@ -208,7 +228,7 @@ Type: {desc.asset_type}
 Description: {keywords_str}
 
 Style: Pixel art, isometric view, high contrast, transparent background.
-Size: {desc.width}x{desc.height} pixels, centered."""
+IMPORTANT: The image must be exactly {desc.width}x{desc.height} pixels, centered in the canvas."""
 
     payload = {
         "model": model,
@@ -286,7 +306,7 @@ Type: {desc.asset_type}
 Description: {keywords_str}
 
 Style: Pixel art, isometric view, high contrast, transparent background.
-Size: {desc.width}x{desc.height} pixels, centered."""
+IMPORTANT: The image must be exactly {desc.width}x{desc.height} pixels, centered in the canvas."""
 
     row, col = desc.grid_position
     grid_rows, grid_cols = desc.grid_size
@@ -299,7 +319,7 @@ This image should contain {total_cells} different views/variations of: {keywords
 Position: {position_desc} (row {row + 1}, column {col + 1})
 
 Style: Pixel art, isometric view, high contrast, transparent background.
-Each cell should be {desc.width}x{desc.height} pixels.
+IMPORTANT: Each cell must be exactly {desc.width}x{desc.height} pixels.
 Layout: Clean grid with consistent spacing between cells."""
 
 
@@ -332,8 +352,6 @@ async def generate_batch_async(
                     api_key,
                     desc,
                     model,
-                    output_size,
-                    aspect_ratio,
                     style_reference_image,
                 )
                 if progress_callback:
@@ -350,14 +368,18 @@ def generate_compositional_grid(
     api_key: str,
     descriptions: list[AssetDescription],
     model: str,
-    output_size: str,
-    aspect_ratio: str,
     grid_size: tuple[int, int],
 ) -> list[tuple[AssetDescription, Optional[bytes]]]:
     results = []
     for i in range(0, len(descriptions), grid_size[0] * grid_size[1]):
         batch = descriptions[i : i + grid_size[0] * grid_size[1]]
         combined_prompt = build_combined_grid_prompt(batch, grid_size)
+
+        max_width = max(d.width for d in batch)
+        max_height = max(d.height for d in batch)
+        total_width = max_width * grid_size[1]
+        total_height = max_height * grid_size[0]
+        output_size, aspect_ratio = calculate_output_config(total_width, total_height)
 
         payload = {
             "model": model,
@@ -420,6 +442,8 @@ def build_combined_grid_prompt(
     descriptions: list[AssetDescription], grid_size: tuple[int, int]
 ) -> str:
     items = []
+    max_width = max(d.width for d in descriptions) if descriptions else 64
+    max_height = max(d.height for d in descriptions) if descriptions else 64
     for i, desc in enumerate(descriptions):
         keywords_str = ", ".join(desc.keywords)
         row, col = i // grid_size[1], i % grid_size[1]
@@ -432,7 +456,8 @@ Each cell should contain a separate game asset:
 
 {items_str}
 
-Style: Pixel art, isometric view, high contrast.
+Style: Pixel art, isometric view, high contrast, transparent background.
+IMPORTANT: Each cell must be exactly {max_width}x{max_height} pixels.
 Layout: Clean {grid_size[0]}x{grid_size[1]} grid with consistent spacing."""
 
 
@@ -518,19 +543,6 @@ def main():
         type=float,
         default=0.5,
         help="Delay between API calls (seconds, only for sync mode)",
-    )
-    parser.add_argument(
-        "--output-size",
-        "-s",
-        default=DEFAULT_OUTPUT_SIZE,
-        choices=["1K", "2K"],
-        help="Output image size (default: 2K)",
-    )
-    parser.add_argument(
-        "--aspect-ratio",
-        "-a",
-        default=DEFAULT_ASPECT_RATIO,
-        help="Aspect ratio for generated images (default: 1:1)",
     )
     parser.add_argument(
         "--concurrent",
@@ -623,8 +635,6 @@ def main():
             args.api_key,
             to_process,
             args.model,
-            args.output_size,
-            args.aspect_ratio,
             grid_size,
         )
 
@@ -654,9 +664,7 @@ def main():
                 f"[{i}/{len(to_process)}] Generating: {desc.source_file} ({desc.width}x{desc.height})..."
             )
 
-            image_bytes = generate_image(
-                args.api_key, desc, args.model, args.output_size, args.aspect_ratio
-            )
+            image_bytes = generate_image(args.api_key, desc, args.model)
 
             if image_bytes:
                 try:
@@ -730,8 +738,6 @@ def main():
                             args.api_key,
                             desc,
                             args.model,
-                            args.output_size,
-                            args.aspect_ratio,
                             style_reference_image,
                         )
                         await save_and_report(desc, image_bytes)
