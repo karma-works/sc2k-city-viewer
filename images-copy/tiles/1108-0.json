@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "tunnel",
+    "entrance",
+    "gray",
+    "concrete",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1108-0.png",
+    "hash": "e143fde07632a544a830287afd7cc149",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

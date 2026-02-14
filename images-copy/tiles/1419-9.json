@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "diagonal",
+    "blue",
+    "bars",
+    "animation",
+    "frame"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1419-9.png",
+    "hash": "dd4d805f5191114e24e7dc10c3ffd076",
+    "generated_at": "2026-02-13 21:14:48",
+    "batch_method": "sprite_sheet"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "house",
+    "residential",
+    "garden",
+    "isometric",
+    "small"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1122.png",
+    "hash": "5a793e8d21ca0826a8dfb53c6ceed8d0",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

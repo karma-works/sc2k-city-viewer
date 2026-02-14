@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "platform",
+    "circular",
+    "gray",
+    "structure",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1105.png",
+    "hash": "c88e5e8638414d7eeef1d70bac9b5e86",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

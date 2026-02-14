@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "building",
+    "factory",
+    "industrial",
+    "flag",
+    "isometric"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1241.png",
+    "hash": "d964de78f217d43b33b8312fe4ea398c",
+    "generated_at": "2026-02-13 21:09:52",
+    "batch_method": "sprite_sheet"
+  }
+}

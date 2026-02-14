@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "forest",
+    "trees",
+    "green",
+    "nature",
+    "dense"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1011.png",
+    "hash": "0bf77cafcaf80087a23b9d3548b37cd0",
+    "generated_at": "2026-02-13 21:08:06",
+    "batch_method": "sprite_sheet"
+  }
+}

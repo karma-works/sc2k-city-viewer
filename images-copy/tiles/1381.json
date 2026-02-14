@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "sailboat",
+    "white-sail",
+    "blue-hull",
+    "water",
+    "vehicle"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1381.png",
+    "hash": "00e00e49c03c5f019970b05de4bebab8",
+    "generated_at": "2026-02-13 21:12:23",
+    "batch_method": "sprite_sheet"
+  }
+}

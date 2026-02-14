@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "runway",
+    "asphalt",
+    "road",
+    "airport",
+    "diagonal"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1221-11.png",
+    "hash": "eabdcefc2faafc508863f42787db80d5",
+    "generated_at": "2026-02-13 21:09:31",
+    "batch_method": "sprite_sheet"
+  }
+}

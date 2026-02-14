@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "nuclear",
+    "hazard",
+    "yellow",
+    "symbol",
+    "warning"
+  ],
+  "type": "icon",
+  "_meta": {
+    "source_file": "1005-23.png",
+    "hash": "232e52393de43715f3a6b5715e232dd1",
+    "generated_at": "2026-02-13 21:08:06",
+    "batch_method": "sprite_sheet"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "road",
+    "bridge",
+    "water",
+    "pylon",
+    "blue"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1087-23.png",
+    "hash": "1a027ff4f65d41c05505c4fbb1780ce9",
+    "generated_at": "2026-02-13 21:08:26",
+    "batch_method": "sprite_sheet"
+  }
+}

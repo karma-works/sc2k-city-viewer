@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "coast",
+    "shore",
+    "sand",
+    "water",
+    "edge"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1275-23.png",
+    "hash": "21c7490a63ee77d3e3eb0378505eb54c",
+    "generated_at": "2026-02-13 21:10:13",
+    "batch_method": "sprite_sheet"
+  }
+}

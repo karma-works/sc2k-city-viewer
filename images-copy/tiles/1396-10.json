@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "rubble",
+    "pile",
+    "debris",
+    "yellow",
+    "red"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1396-10.png",
+    "hash": "c4fa9a4f834a48d58f3fe3ce55adaa17",
+    "generated_at": "2026-02-13 21:12:44",
+    "batch_method": "sprite_sheet"
+  }
+}

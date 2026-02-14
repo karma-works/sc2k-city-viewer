@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "office",
+    "modern",
+    "grey",
+    "commercial",
+    "building"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1161.png",
+    "hash": "5299dab5bfb3e09cdd1abd9d79e7e018",
+    "generated_at": "2026-02-13 21:09:09",
+    "batch_method": "sprite_sheet"
+  }
+}

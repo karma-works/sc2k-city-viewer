@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "blue",
+    "vertical",
+    "lines",
+    "left",
+    "triangle"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1447-18.png",
+    "hash": "45eaa5a4245f6bd0eea6c2980a935f7a",
+    "generated_at": "2026-02-13 21:16:54",
+    "batch_method": "sprite_sheet"
+  }
+}

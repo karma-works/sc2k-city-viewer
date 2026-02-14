@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "office",
+    "corporate",
+    "parking",
+    "building",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1150.png",
+    "hash": "45d9a83f095e6b57916f12a410d0caf8",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

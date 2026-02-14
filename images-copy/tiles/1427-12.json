@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "grey",
+    "blue",
+    "isometric",
+    "shape"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1427-12.png",
+    "hash": "df39828d57c5e72a8f6a56d7cc3d8b99",
+    "generated_at": "2026-02-13 21:15:08",
+    "batch_method": "sprite_sheet"
+  }
+}

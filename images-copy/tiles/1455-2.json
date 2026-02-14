@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "isometric",
+    "blue",
+    "rectangle",
+    "diagonal",
+    "flat"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1455-2.png",
+    "hash": "317c5976d60efe0f614d59abf6e49ea0",
+    "generated_at": "2026-02-13 21:17:39",
+    "batch_method": "sprite_sheet"
+  }
+}

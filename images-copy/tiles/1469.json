@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "light",
+    "blue",
+    "diamond",
+    "tile",
+    "empty"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1469.png",
+    "hash": "c4c18e12252a89b0d22116619553d817",
+    "generated_at": "2026-02-13 21:18:54",
+    "batch_method": "sprite_sheet"
+  }
+}

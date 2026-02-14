@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "parallel",
+    "tracks",
+    "gray",
+    "blue",
+    "diagonal"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1419-6.png",
+    "hash": "8763ef88f5fed65015f03eafb8091690",
+    "generated_at": "2026-02-13 21:14:26",
+    "batch_method": "sprite_sheet"
+  }
+}

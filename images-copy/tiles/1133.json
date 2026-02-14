@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "tank",
+    "industrial",
+    "blue",
+    "storage",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1133.png",
+    "hash": "2cd9dc45741a6dd2797bfdab3dcc236e",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

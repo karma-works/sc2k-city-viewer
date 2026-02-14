@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "diagonal",
+    "lines",
+    "blue",
+    "grey",
+    "full"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1441-18.png",
+    "hash": "c8c877547c05ba3d02e3c84ca830dab5",
+    "generated_at": "2026-02-13 21:16:32",
+    "batch_method": "sprite_sheet"
+  }
+}

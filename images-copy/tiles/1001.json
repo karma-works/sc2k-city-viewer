@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "dirt",
+    "soil",
+    "ground",
+    "earth",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1001.png",
+    "hash": "87a8b5540fe2ab0a47152649a70488e2",
+    "generated_at": "2026-02-13 21:07:16",
+    "batch_method": "sprite_sheet"
+  }
+}

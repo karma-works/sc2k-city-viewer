@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "sailboat",
+    "red-sail",
+    "blue-hull",
+    "water",
+    "vehicle"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1380.png",
+    "hash": "f533bdb890cdc4c409a09ba42da90e6b",
+    "generated_at": "2026-02-13 21:12:23",
+    "batch_method": "sprite_sheet"
+  }
+}

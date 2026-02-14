@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "hospital",
+    "medical",
+    "brick",
+    "building",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1143.png",
+    "hash": "ce26fcfd2ef9f321427ab83b46625504",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

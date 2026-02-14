@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "rail",
+    "track",
+    "horizontal",
+    "blue",
+    "metal"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1400-1.png",
+    "hash": "31b0a8c53c45a77b5c6de6d75ba0006f",
+    "generated_at": "2026-02-13 21:13:05",
+    "batch_method": "sprite_sheet"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "curved",
+    "tracks",
+    "blue",
+    "horizontal"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1415-17.png",
+    "hash": "944b3b4a5337553e74845d721f6602cf",
+    "generated_at": "2026-02-13 21:14:06",
+    "batch_method": "sprite_sheet"
+  }
+}

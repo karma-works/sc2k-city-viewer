@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "red",
+    "helicopter",
+    "side-view",
+    "blue",
+    "rotor"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1366-5.png",
+    "hash": "a9a1e0cd7a78b760d42657427e366f6c",
+    "generated_at": "2026-02-13 21:12:00",
+    "batch_method": "sprite_sheet"
+  }
+}

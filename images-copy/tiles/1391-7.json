@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "bulldozer",
+    "yellow",
+    "construction",
+    "vehicle",
+    "isometric"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1391-7.png",
+    "hash": "daf52c8f0cb88570a91a80addf16f31f",
+    "generated_at": "2026-02-13 21:12:23",
+    "batch_method": "sprite_sheet"
+  }
+}

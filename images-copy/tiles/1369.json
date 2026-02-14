@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "building",
+    "industrial",
+    "factory",
+    "gray",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1369.png",
+    "hash": "b2256b7023273858f85157982b9483d5",
+    "generated_at": "2026-02-13 21:12:23",
+    "batch_method": "sprite_sheet"
+  }
+}

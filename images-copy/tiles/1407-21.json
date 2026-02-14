@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "horizontal",
+    "curved",
+    "blue",
+    "grey",
+    "pointing-down"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1407-21.png",
+    "hash": "86b4a8e9b2ff4480468a7795a4cf79f4",
+    "generated_at": "2026-02-13 21:13:26",
+    "batch_method": "sprite_sheet"
+  }
+}

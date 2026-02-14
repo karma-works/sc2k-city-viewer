@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "bridge",
+    "isometric",
+    "pixel",
+    "road",
+    "suspension"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1081.png",
+    "hash": "74e81b5c32bf99ffd450c8d31ddf3acd",
+    "generated_at": "2026-02-13 21:19:09"
+  }
+}

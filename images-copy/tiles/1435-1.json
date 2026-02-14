@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "vertical",
+    "blue",
+    "gray",
+    "arrow",
+    "left"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1435-1.png",
+    "hash": "abfd90ca036927eb3dbe87ebaae3c771",
+    "generated_at": "2026-02-13 21:15:49",
+    "batch_method": "sprite_sheet"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "empty",
+    "transparent",
+    "blank",
+    "space",
+    "none"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1236.png",
+    "hash": "8eb087127572eff501dc6e07803f2b0f",
+    "generated_at": "2026-02-13 21:09:31",
+    "batch_method": "sprite_sheet"
+  }
+}

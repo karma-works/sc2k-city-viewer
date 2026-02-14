@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "lightning",
+    "red",
+    "bolt",
+    "weather",
+    "icon"
+  ],
+  "type": "icon",
+  "_meta": {
+    "source_file": "1386-1.png",
+    "hash": "86a21106c93ae0238a03a5352906f133",
+    "generated_at": "2026-02-13 21:12:23",
+    "batch_method": "sprite_sheet"
+  }
+}

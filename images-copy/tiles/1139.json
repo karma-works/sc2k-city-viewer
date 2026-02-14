@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "construction",
+    "site",
+    "dirt",
+    "foundation",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1139.png",
+    "hash": "1c29e1e7c2bf693c1c8bbeecccd7b32c",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

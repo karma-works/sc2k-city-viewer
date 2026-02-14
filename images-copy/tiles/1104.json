@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "platform",
+    "elevated",
+    "gray",
+    "structure",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1104.png",
+    "hash": "b11d15c56bc0dbf838d311b2751addfd",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

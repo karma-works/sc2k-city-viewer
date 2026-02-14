@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "road",
+    "bridge",
+    "pylon",
+    "grey",
+    "black"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1067.png",
+    "hash": "34afc3e0900b40f4a6704398db1bdd59",
+    "generated_at": "2026-02-13 21:08:26",
+    "batch_method": "sprite_sheet"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "terrain",
+    "cliff",
+    "dirt",
+    "rock",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1258.png",
+    "hash": "609b114309ee1690bccf3cbfe19c5647",
+    "generated_at": "2026-02-13 21:09:52",
+    "batch_method": "sprite_sheet"
+  }
+}

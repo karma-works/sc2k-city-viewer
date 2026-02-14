@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "isometric",
+    "diamond",
+    "frame",
+    "blue",
+    "orb"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1456-15.png",
+    "hash": "078869cb2ab88688eee6ce8787a7a733",
+    "generated_at": "2026-02-13 21:17:59",
+    "batch_method": "sprite_sheet"
+  }
+}

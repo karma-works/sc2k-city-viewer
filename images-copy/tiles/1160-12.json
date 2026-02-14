@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "powerplant",
+    "industrial",
+    "nuclear",
+    "building",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1160-12.png",
+    "hash": "067c0a8ee6c9c10b08019d17a02e3f56",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

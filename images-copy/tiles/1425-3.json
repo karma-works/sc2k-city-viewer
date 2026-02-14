@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "blue",
+    "horizontal",
+    "lines",
+    "fading"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1425-3.png",
+    "hash": "727c2f206643d3dcb2abe89ad6de552a",
+    "generated_at": "2026-02-13 21:15:08",
+    "batch_method": "sprite_sheet"
+  }
+}

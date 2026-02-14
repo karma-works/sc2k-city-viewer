@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "supermarket",
+    "retail",
+    "parking",
+    "building",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1149.png",
+    "hash": "c83b57cf543f6a1d385b695892a089fa",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

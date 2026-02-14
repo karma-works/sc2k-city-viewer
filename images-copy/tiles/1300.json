@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "solid",
+    "green",
+    "flat",
+    "isometric",
+    "color"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1300.png",
+    "hash": "67b976c89953fb99a78498462b7f7efa",
+    "generated_at": "2026-02-13 21:11:39",
+    "batch_method": "sprite_sheet"
+  }
+}

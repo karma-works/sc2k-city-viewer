@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "shop",
+    "commercial",
+    "red",
+    "building",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1127.png",
+    "hash": "4001d83aa18ffa32d5d20664cf4a0117",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

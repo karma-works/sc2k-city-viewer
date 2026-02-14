@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "road",
+    "slope",
+    "exit",
+    "grey",
+    "brown"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1095.png",
+    "hash": "6285767d234b92f104bbcef5bea1eb59",
+    "generated_at": "2026-02-13 21:08:26",
+    "batch_method": "sprite_sheet"
+  }
+}

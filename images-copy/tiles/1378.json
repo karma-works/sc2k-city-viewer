@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "building",
+    "white",
+    "blue",
+    "warehouse",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1378.png",
+    "hash": "0721972751a32283361c18c363a454bb",
+    "generated_at": "2026-02-13 21:12:23",
+    "batch_method": "sprite_sheet"
+  }
+}

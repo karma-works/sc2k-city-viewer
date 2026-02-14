@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "isometric",
+    "diamond",
+    "frame",
+    "blue",
+    "water"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1459-23.png",
+    "hash": "e1677aeb0bcc214437185e1b879a8752",
+    "generated_at": "2026-02-13 21:17:59",
+    "batch_method": "sprite_sheet"
+  }
+}

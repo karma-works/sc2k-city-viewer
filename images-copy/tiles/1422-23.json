@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "vertical",
+    "blue",
+    "bars",
+    "animation",
+    "frame"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1422-23.png",
+    "hash": "7608969da086f873a7175a78efeb3e1a",
+    "generated_at": "2026-02-13 21:14:48",
+    "batch_method": "sprite_sheet"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "curved",
+    "track",
+    "gray",
+    "blue",
+    "segment"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1416-16.png",
+    "hash": "0dc2b5dd0559d211e69d0612b8ebf5e0",
+    "generated_at": "2026-02-13 21:14:26",
+    "batch_method": "sprite_sheet"
+  }
+}

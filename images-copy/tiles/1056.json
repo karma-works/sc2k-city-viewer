@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "rail",
+    "track",
+    "crossing",
+    "red",
+    "white"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1056.png",
+    "hash": "aa09fdf60d4b1d8a41af83803bbb466a",
+    "generated_at": "2026-02-13 21:08:26",
+    "batch_method": "sprite_sheet"
+  }
+}

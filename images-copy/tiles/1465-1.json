@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "blue",
+    "diamond",
+    "platform",
+    "hover"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1465-1.png",
+    "hash": "97f8d745071541ef9fecfb3b4535c45d",
+    "generated_at": "2026-02-13 21:18:42",
+    "batch_method": "sprite_sheet"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "blue",
+    "object",
+    "isometric",
+    "round",
+    "base"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1344.png",
+    "hash": "ec90def7a67590d8908c4797732fff89",
+    "generated_at": "2026-02-13 21:11:39",
+    "batch_method": "sprite_sheet"
+  }
+}

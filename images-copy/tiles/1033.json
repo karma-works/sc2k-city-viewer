@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "road",
+    "perspective",
+    "asphalt",
+    "street",
+    "gray"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1033.png",
+    "hash": "882022b9339e0817c442f82fb3186a68",
+    "generated_at": "2026-02-13 21:08:06",
+    "batch_method": "sprite_sheet"
+  }
+}

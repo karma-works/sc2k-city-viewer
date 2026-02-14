@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "diagonal",
+    "tracks",
+    "blue",
+    "double"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1412-10.png",
+    "hash": "d08559eedc19563201edf5c49dab6aed",
+    "generated_at": "2026-02-13 21:14:06",
+    "batch_method": "sprite_sheet"
+  }
+}

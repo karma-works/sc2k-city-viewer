@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "black",
+    "line",
+    "dash",
+    "shadow",
+    "flat"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1484.png",
+    "hash": "1c44414afe67753cd4a42ab527ff2e3d",
+    "generated_at": "2026-02-13 21:18:54",
+    "batch_method": "sprite_sheet"
+  }
+}

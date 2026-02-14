@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "sand",
+    "yellow",
+    "plain",
+    "isometric",
+    "terrain"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1296.png",
+    "hash": "8b30e9303a130a83498463c71f53edd1",
+    "generated_at": "2026-02-13 21:11:39",
+    "batch_method": "sprite_sheet"
+  }
+}

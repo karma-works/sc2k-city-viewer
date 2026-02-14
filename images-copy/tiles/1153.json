@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "theater",
+    "cinema",
+    "brick",
+    "building",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1153.png",
+    "hash": "2fbbf1f09b719b3d7e64bb46116280f8",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

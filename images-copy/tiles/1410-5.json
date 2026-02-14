@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "isometric",
+    "platform",
+    "blue",
+    "grey",
+    "segmented"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1410-5.png",
+    "hash": "1d842f97c3b21dc8564cebb4e76d05b9",
+    "generated_at": "2026-02-13 21:13:46",
+    "batch_method": "sprite_sheet"
+  }
+}

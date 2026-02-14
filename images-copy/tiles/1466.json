@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "green",
+    "capsule",
+    "vehicle",
+    "pod"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1466.png",
+    "hash": "df8e24ee2d61ca4b72247d5bb6798ac6",
+    "generated_at": "2026-02-13 21:18:42",
+    "batch_method": "sprite_sheet"
+  }
+}

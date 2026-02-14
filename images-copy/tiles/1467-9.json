@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "blue",
+    "cross",
+    "marker",
+    "isometric",
+    "frame"
+  ],
+  "type": "ui_element",
+  "_meta": {
+    "source_file": "1467-9.png",
+    "hash": "d031cc2bc235fdcdedf8ccdf13bb601f",
+    "generated_at": "2026-02-13 21:18:54",
+    "batch_method": "sprite_sheet"
+  }
+}

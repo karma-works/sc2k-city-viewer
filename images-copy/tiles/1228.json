@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "hangar",
+    "airport",
+    "building",
+    "storage",
+    "grey"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1228.png",
+    "hash": "14f6c9f0823b38558948214ee3f052dd",
+    "generated_at": "2026-02-13 21:09:31",
+    "batch_method": "sprite_sheet"
+  }
+}

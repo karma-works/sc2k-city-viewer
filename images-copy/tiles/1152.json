@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "library",
+    "public",
+    "classic",
+    "building",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1152.png",
+    "hash": "b511cbb4cf9e2c7ec4198c85efe6bc69",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

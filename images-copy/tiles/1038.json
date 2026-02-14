@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "road",
+    "intersection",
+    "asphalt",
+    "street",
+    "gray"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1038.png",
+    "hash": "4bf14d7ace1da3a6bde75144e1aa64fd",
+    "generated_at": "2026-02-13 21:08:06",
+    "batch_method": "sprite_sheet"
+  }
+}

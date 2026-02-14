@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "control tower",
+    "airport",
+    "radar",
+    "tall",
+    "building"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1225-0.png",
+    "hash": "e1061a2a25d3be22652b3cf0e1f8b249",
+    "generated_at": "2026-02-13 21:09:31",
+    "batch_method": "sprite_sheet"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "keywords": [
+    "dot",
+    "brown"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1437-10.png",
+    "hash": "35b5df15e579d0e9fd8535d95fff4348",
+    "generated_at": "2026-02-13 21:16:11",
+    "batch_method": "sprite_sheet"
+  }
+}

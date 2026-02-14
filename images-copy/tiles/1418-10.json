@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "multiple",
+    "tracks",
+    "gray",
+    "blue",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1418-10.png",
+    "hash": "cf7a1385df07503b87db2154ccb0aacc",
+    "generated_at": "2026-02-13 21:14:26",
+    "batch_method": "sprite_sheet"
+  }
+}

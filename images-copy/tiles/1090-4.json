@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "rail",
+    "bridge",
+    "water",
+    "pylon",
+    "blue"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1090-4.png",
+    "hash": "7e57f8046ad6443d981d2a55c101b3ec",
+    "generated_at": "2026-02-13 21:08:26",
+    "batch_method": "sprite_sheet"
+  }
+}

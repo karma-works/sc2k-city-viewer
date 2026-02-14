@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "pyramid",
+    "blue",
+    "grey",
+    "structure"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1436.png",
+    "hash": "0a766ea9d0016cb40372040b19fa756a",
+    "generated_at": "2026-02-13 21:16:11",
+    "batch_method": "sprite_sheet"
+  }
+}

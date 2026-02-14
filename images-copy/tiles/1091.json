@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "rail",
+    "bridge",
+    "flat",
+    "red",
+    "white"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1091.png",
+    "hash": "04591cccd7ad546f5a82263ce0f0a7d2",
+    "generated_at": "2026-02-13 21:08:26",
+    "batch_method": "sprite_sheet"
+  }
+}

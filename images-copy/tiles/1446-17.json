@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "blue",
+    "horizontal",
+    "lines",
+    "inverted",
+    "triangle"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1446-17.png",
+    "hash": "42412d300e22d1155f41482a1e46071c",
+    "generated_at": "2026-02-13 21:16:54",
+    "batch_method": "sprite_sheet"
+  }
+}
