@@ -6,7 +6,7 @@ The aim of this project is an open source city viewer for SimCity 2000 that repl
 
 Current project state: HIGLY EXPERIMENTAL
 Take a look at the screenshot yourself
-![](image.png)
+![Screenshot](screenshots/1.png)
 
 What was done so far
 - Converted the Electron-Version into a pure web version, inklusive sql db.
@@ -21,8 +21,6 @@ Main components are the python Scripts in this project.
 The project is based on OpenSC2K, an attempt to reimplement Sim City 2000 in open source. OpenSC2K development stalled, so it does not have the real simulation yet, only a city viewer. The city viewer from the original implementation only works if the user copies proprietary assets from the game copy into OpenSC2K. Some repos also include the original Sim City 2000 assets which is illegal.
 
 This project aims to replace the original Sim City 2000 assets with AI-generated ones, so it is both functional and fully open source. (fully functional in the sense of city viewing, not in the sense of a full game simulation)
-
-![Screenshot](/screenshots/1.png)
 
 ## Asset Generation
 The asset generation process works as follows:
