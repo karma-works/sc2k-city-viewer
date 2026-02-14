@@ -1,8 +1,8 @@
 {
-  "name": "OpenSC2K",
+  "name": "sc2k-city-viewer",
   "version": "0.0.1",
-  "description": "OpenSC2K - An Open Source remake of SimCity 2000",
-  "homepage": "https://github.com/rage8885/OpenSC2K",
+  "description": "SC2K City Viewer - An AI-powered open source city viewer based on OpenSC2K",
+  "homepage": "https://github.com/karma-works/sc2k-city-viewer",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rage8885/OpenSC2K.git"
+    "url": "https://github.com/karma-works/sc2k-city-viewer.git"
   },
   "author": "Nicholas Ochoa",
   "license": "GPL-3.0",

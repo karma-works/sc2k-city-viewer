@@ -2,7 +2,7 @@
 
 ## Overview
 
-Comprehensive test suite for OpenSC2K web migration. Tests are written in TypeScript and use Bun's built-in test runner.
+Comprehensive test suite for SC2K City Viewer web migration. Tests are written in TypeScript and use Bun's built-in test runner.
 
 ## Test Structure
 

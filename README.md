@@ -1,39 +1,59 @@
-# OpenSC2K
-OpenSC2K - An Open Source remake of SimCity 2000 written in JavaScript using HTML5 Canvas API, SQLite and built on [Electron](https://github.com/atom/electron).
+# SC2K City Viewer
+SC2K City Viewer - An AI-powered open source city viewer based on OpenSC2K
 
 ## Overview
-Currently a lot remains to be implemented but the basic framework is there for importing and viewing cities. Lots of stuff remains completely unimplemented such as the actual simulation, rendering of many special case tiles and buildings, support for zoom levels and anything else that exists outside of importing and viewing.
+This project is an open source city viewer for SimCity 2000 that replaces the proprietary game assets with AI-generated ones, making it both functional and fully open source.
 
-Along with implementing the original functionality and features, I plan to add additional capabilities beyond the original such as larger city/map sizes, additional network types, adding buildings beyond the initial tileset limitations, action/history tracking along with replays and more.
+The project is based on OpenSC2K, an attempt to reimplement Sim City 2000 in open source. OpenSC2K development stalled, so it does not have the real simulation yet, only a city viewer. The city viewer from the original implementation only works if the user copies proprietary assets from the game copy into OpenSC2K. Some repos also include the original Sim City 2000 assets which is illegal.
+
+This project aims to replace the original Sim City 2000 assets with AI-generated ones, so it is both functional and fully open source. (fully functional in the sense of city viewing, not in the sense of a full game simulation)
 
 ![Screenshot](/screenshots/1.png)
+
+## Asset Generation
+The asset generation process works as follows:
+
+1. **Computer Vision**: Image descriptions are generated from the original game assets
+2. **AI Generation**: AI-generated images are created from the image descriptions and a styles prompt
+
+## Credits
+
+Based on the work of:
+- **OpenSC2K** - An attempt to reimplement SimCity 2000 in open source
+  - Repository: https://github.com/karma-works/opensc2k.git
+  - Credits: The original authors of OpenSC2K
+
+Original game assets were extracted from the original SimCity 2000 Special Edition CD and are NOT covered by the GNU General Public License used by this project. These assets are copyright EA / Maxis.
+
+Using sc2kparser created by Objelisks distributed under the terms of the ISC license.
+<https://github.com/Objelisks/sc2kparser>
+
+Based on the work of Dale Floer:
+- SimCity 2000 specifications (*.sc2)
+- MIF / LARGE.DAT graphics extraction
+
+Based on the work of David Moews:
+- SimCity 2000 for MS-DOS file format; unofficial partial information <http://djm.cc/dmoews.html>
 
 ## Installation
 
 ### OS X
-1. `git clone https://github.com/rage8885/OpenSC2K` or download this repository
-1. `cd OpenSC2K`
-1. `npm install` downloads and installs the dependancies
-1. `node_modules/.bin/electron-rebuild -f -w better-sqlite3` rebuilds Electron with better-sqlite3 bindings
-1. `npm start` to run
+1. `git clone https://github.com/karma-works/sc2k-city-viewer.git` or download this repository
+1. `cd sc2k-city-viewer`
+1. `npm install` downloads and installs the dependencies
+1. `npm run dev` to start the development server
 
 ### Windows
-1. `git clone https://github.com/rage8885/OpenSC2K` or download this repository
-1. `cd OpenSC2K`
-1. `npm install --global --production windows-build-tools` (as admin) installs Windows specific prerequisites
-1. `npm config set msvs_version 2015 --global` changes config to use correct version of msvs
-1. Close all shell/cmd windows and open a new one (non-admin) to reload npm config with correct version
-1. Navigate to the OpenSC2K directory
+1. `git clone https://github.com/karma-works/sc2k-city-viewer.git` or download this repository
+1. `cd sc2k-city-viewer`
 1. `npm install` downloads and installs the dependencies
-1. `node_modules\.bin\electron-rebuild -f -w better-sqlite3` rebuilds Electron with better-sqlite3 bindings
-1. `npm start` to run
+1. `npm run dev` to start the development server
 
 ### Linux
-1. `git clone https://github.com/rage8885/OpenSC2K` or download this repository
-1. `cd OpenSC2K`
+1. `git clone https://github.com/karma-works/sc2k-city-viewer.git` or download this repository
+1. `cd sc2k-city-viewer`
 1. `npm install` downloads and installs the dependencies
-1. `node_modules/.bin/electron-rebuild -f -w better-sqlite3` rebuilds Electron with better-sqlite3 bindings
-1. `npm start` to run
+1. `npm run dev` to start the development server
 
 ## Usage
 By default, there is no saved city loaded - select a valid SimCity 2000 .sc2 saved game when the file open prompt appears. The city will be imported and saved within the SQLite database and prompt to reload. Right now, the last imported city will automatically load with no option to change cities. To import a new city, press `O` and the file open prompt should appear.
