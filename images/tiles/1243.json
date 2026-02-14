@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "mansion",
+    "house",
+    "residential",
+    "garden",
+    "isometric"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1243.png",
+    "hash": "b41fb75a45e00774901a3b348aa702a5",
+    "generated_at": "2026-02-13 21:09:52",
+    "batch_method": "sprite_sheet"
+  }
+}

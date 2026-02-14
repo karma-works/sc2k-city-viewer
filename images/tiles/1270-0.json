@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "water",
+    "flat",
+    "blue",
+    "ocean",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1270-0.png",
+    "hash": "7da9d7dd2b59f3a0482294f978e56db1",
+    "generated_at": "2026-02-13 21:09:52",
+    "batch_method": "sprite_sheet"
+  }
+}

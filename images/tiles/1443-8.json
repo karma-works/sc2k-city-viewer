@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "blue",
+    "horizontal",
+    "lines",
+    "pattern"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1443-8.png",
+    "hash": "827efeda8b17d69ec031043415467f82",
+    "generated_at": "2026-02-13 21:16:54",
+    "batch_method": "sprite_sheet"
+  }
+}

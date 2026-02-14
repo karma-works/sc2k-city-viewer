@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "tree",
+    "pine",
+    "green",
+    "nature",
+    "foliage"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1009.png",
+    "hash": "56f03c1e8b87a9514a8840e503952f1d",
+    "generated_at": "2026-02-13 21:08:06",
+    "batch_method": "sprite_sheet"
+  }
+}

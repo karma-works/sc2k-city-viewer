@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "water",
+    "shore",
+    "edge",
+    "sand",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1285-10.png",
+    "hash": "b17f3ec58ae2854e9b41324783ad5df6",
+    "generated_at": "2026-02-13 21:10:56",
+    "batch_method": "sprite_sheet"
+  }
+}

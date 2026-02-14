@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "horizontal",
+    "blue",
+    "bars",
+    "pyramid",
+    "frame"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1423-5.png",
+    "hash": "c02d996d7c53623de4a4cadba4485c7a",
+    "generated_at": "2026-02-13 21:14:48",
+    "batch_method": "sprite_sheet"
+  }
+}

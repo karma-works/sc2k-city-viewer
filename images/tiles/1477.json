@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "red",
+    "diamond",
+    "minus",
+    "subtract",
+    "button"
+  ],
+  "type": "ui_element",
+  "_meta": {
+    "source_file": "1477.png",
+    "hash": "e5820124777c62f93c862a0bd583cc6e",
+    "generated_at": "2026-02-13 21:18:54",
+    "batch_method": "sprite_sheet"
+  }
+}

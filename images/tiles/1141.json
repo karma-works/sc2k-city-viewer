@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "apartments",
+    "residential",
+    "complex",
+    "building",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1141.png",
+    "hash": "bb2f4d895a62adb04355f455a60d8530",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

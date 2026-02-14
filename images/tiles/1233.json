@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "stadium",
+    "arena",
+    "sports",
+    "building",
+    "yellow"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1233.png",
+    "hash": "bc751c8b346285622e49eb229d6e336d",
+    "generated_at": "2026-02-13 21:09:31",
+    "batch_method": "sprite_sheet"
+  }
+}

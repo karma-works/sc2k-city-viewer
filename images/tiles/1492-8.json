@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "blue",
+    "textured",
+    "water",
+    "diamond",
+    "tile"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1492-8.png",
+    "hash": "792ece1b7d43d3f130379e103fc992d7",
+    "generated_at": "2026-02-13 21:18:54",
+    "batch_method": "sprite_sheet"
+  }
+}

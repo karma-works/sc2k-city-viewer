@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "park",
+    "greenery",
+    "trees",
+    "urban",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1114.png",
+    "hash": "993c68fff238306ccd01eb6e2a511e91",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

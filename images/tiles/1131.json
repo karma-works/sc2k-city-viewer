@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "apartment",
+    "residential",
+    "brick",
+    "building",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1131.png",
+    "hash": "fc0a487d780fb07cc0fb1e9d2cc5d700",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

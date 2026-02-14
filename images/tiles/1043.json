@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "road",
+    "street",
+    "lamp",
+    "light",
+    "gray"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1043.png",
+    "hash": "0070d38e6818796b3332528aefc46da1",
+    "generated_at": "2026-02-13 21:08:06",
+    "batch_method": "sprite_sheet"
+  }
+}

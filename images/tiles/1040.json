@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "road",
+    "traffic",
+    "light",
+    "intersection",
+    "gray"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1040.png",
+    "hash": "fb11b759c6cf8eb3ad6010bbca947496",
+    "generated_at": "2026-02-13 21:08:06",
+    "batch_method": "sprite_sheet"
+  }
+}

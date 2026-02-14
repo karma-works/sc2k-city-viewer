@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "fire",
+    "flame",
+    "burning",
+    "hazard",
+    "animated"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1399.png",
+    "hash": "bbb9da713503083c79cd579249be3c9e",
+    "generated_at": "2026-02-13 21:13:05",
+    "batch_method": "sprite_sheet"
+  }
+}

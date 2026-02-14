@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "tire",
+    "wheel",
+    "small",
+    "rubber",
+    "black"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1488.png",
+    "hash": "df69d01d013ede680c7f22547c6a1fb1",
+    "generated_at": "2026-02-13 21:18:54",
+    "batch_method": "sprite_sheet"
+  }
+}

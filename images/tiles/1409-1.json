@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "horizontal",
+    "bar",
+    "blue",
+    "grey",
+    "segmented"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1409-1.png",
+    "hash": "1d08f441947e4e4c53fc725f4ffc5a5d",
+    "generated_at": "2026-02-13 21:13:46",
+    "batch_method": "sprite_sheet"
+  }
+}

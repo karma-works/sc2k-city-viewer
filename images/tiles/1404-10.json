@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "horizontal",
+    "thin",
+    "lines",
+    "blue",
+    "grey"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1404-10.png",
+    "hash": "4d617c4fd22ea8d4abd6e420ae6b0f1e",
+    "generated_at": "2026-02-13 21:13:26",
+    "batch_method": "sprite_sheet"
+  }
+}

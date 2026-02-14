@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "terrain",
+    "wedge",
+    "rock",
+    "stone",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1266.png",
+    "hash": "5c3c30dd86e53b69bd08de8abd1e8a26",
+    "generated_at": "2026-02-13 21:09:52",
+    "batch_method": "sprite_sheet"
+  }
+}

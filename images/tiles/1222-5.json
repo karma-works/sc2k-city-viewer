@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "tarmac",
+    "concrete",
+    "airport",
+    "ground",
+    "grey"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1222-5.png",
+    "hash": "9ef050dea544f9f9184c49d0bcdcd5b2",
+    "generated_at": "2026-02-13 21:09:31",
+    "batch_method": "sprite_sheet"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "tunnel",
+    "wall",
+    "grey",
+    "concrete",
+    "sloped"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1066.png",
+    "hash": "ac0c90145b62ed344217357334b66d3b",
+    "generated_at": "2026-02-13 21:08:26",
+    "batch_method": "sprite_sheet"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "gold",
+    "diamond",
+    "outline",
+    "selection",
+    "grid"
+  ],
+  "type": "ui_element",
+  "_meta": {
+    "source_file": "1356.png",
+    "hash": "76bd00027d590c5330bc37169c7045bd",
+    "generated_at": "2026-02-13 21:12:00",
+    "batch_method": "sprite_sheet"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "road",
+    "bridge",
+    "double",
+    "grey",
+    "concrete"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1075.png",
+    "hash": "3694df2b94fa5af50f31e189d26c4f9d",
+    "generated_at": "2026-02-13 21:08:26",
+    "batch_method": "sprite_sheet"
+  }
+}

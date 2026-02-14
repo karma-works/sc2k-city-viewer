@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "rail",
+    "track",
+    "train",
+    "transport",
+    "metal"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1044.png",
+    "hash": "2589f5810694cee0394548b660399401",
+    "generated_at": "2026-02-13 21:08:06",
+    "batch_method": "sprite_sheet"
+  }
+}

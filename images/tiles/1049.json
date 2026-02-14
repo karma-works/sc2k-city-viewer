@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "rail",
+    "crossing",
+    "train",
+    "transport",
+    "metal"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1049.png",
+    "hash": "b1e541e92e7f5b493996bae2812cc677",
+    "generated_at": "2026-02-13 21:08:06",
+    "batch_method": "sprite_sheet"
+  }
+}

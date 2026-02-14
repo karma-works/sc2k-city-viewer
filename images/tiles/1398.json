@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "fire",
+    "burning",
+    "rubble",
+    "flames",
+    "glowing"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1398.png",
+    "hash": "225e31f1ef61691947bd50e0c5a220bb",
+    "generated_at": "2026-02-13 21:12:44",
+    "batch_method": "sprite_sheet"
+  }
+}

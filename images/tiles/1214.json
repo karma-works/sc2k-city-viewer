@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "pixel",
+    "isometric",
+    "building",
+    "hospital",
+    "city"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1214.png",
+    "hash": "1bd59e2d609cf7960567639b9505c9dd",
+    "generated_at": "2026-02-14 05:56:47"
+  }
+}

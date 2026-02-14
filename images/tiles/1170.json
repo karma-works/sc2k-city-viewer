@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "building",
+    "ruin",
+    "abandoned",
+    "grey",
+    "derelict"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1170.png",
+    "hash": "0b5abc3d84521b3983389d31719fef48",
+    "generated_at": "2026-02-13 21:09:09",
+    "batch_method": "sprite_sheet"
+  }
+}

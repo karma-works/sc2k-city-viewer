@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "warehouse",
+    "industrial",
+    "gray",
+    "building",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1130.png",
+    "hash": "dae677abbb52fb0c89cd6db905b486aa",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

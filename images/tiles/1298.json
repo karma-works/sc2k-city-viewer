@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "dirt",
+    "brown",
+    "dots",
+    "isometric",
+    "terrain"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1298.png",
+    "hash": "d90a7b69d7c70ca986c434816b5296a0",
+    "generated_at": "2026-02-13 21:11:39",
+    "batch_method": "sprite_sheet"
+  }
+}

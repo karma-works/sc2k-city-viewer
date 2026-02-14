@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "blue",
+    "diamond",
+    "outline",
+    "selection",
+    "grid"
+  ],
+  "type": "ui_element",
+  "_meta": {
+    "source_file": "1355.png",
+    "hash": "a1b9e9a8dcede70de52567ce8757b178",
+    "generated_at": "2026-02-13 21:12:00",
+    "batch_method": "sprite_sheet"
+  }
+}

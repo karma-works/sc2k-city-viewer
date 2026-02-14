@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "water",
+    "ripples",
+    "blue",
+    "ocean",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1270-2.png",
+    "hash": "aa90158ceddc411c6f11faf785d4892a",
+    "generated_at": "2026-02-13 21:09:52",
+    "batch_method": "sprite_sheet"
+  }
+}

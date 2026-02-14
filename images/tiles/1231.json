@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "fighter jet",
+    "military",
+    "aircraft",
+    "grey",
+    "plane"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1231.png",
+    "hash": "2bfd563ab4f5e226df7db65686e57b32",
+    "generated_at": "2026-02-13 21:09:31",
+    "batch_method": "sprite_sheet"
+  }
+}

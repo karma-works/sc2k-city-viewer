@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "bus",
+    "white",
+    "vehicle",
+    "transport",
+    "isometric"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1374.png",
+    "hash": "dde40cdb08c4b29992ce05e5820f64f0",
+    "generated_at": "2026-02-13 21:12:23",
+    "batch_method": "sprite_sheet"
+  }
+}

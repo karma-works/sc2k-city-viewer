@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "radar",
+    "dish",
+    "antenna",
+    "airport",
+    "grey"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1234.png",
+    "hash": "ded16e97818a62ef5f8cf0e33fbb98dc",
+    "generated_at": "2026-02-13 21:09:31",
+    "batch_method": "sprite_sheet"
+  }
+}

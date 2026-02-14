@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "vertical",
+    "wedge",
+    "blue",
+    "grey",
+    "pointing-right"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1406-22.png",
+    "hash": "3f4683da1bfd40b17d4274a40206e382",
+    "generated_at": "2026-02-13 21:13:26",
+    "batch_method": "sprite_sheet"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "diagonal",
+    "blue",
+    "grey",
+    "lines"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1430-16.png",
+    "hash": "691f1558163d09a85d896d5a940f1ab3",
+    "generated_at": "2026-02-13 21:15:27",
+    "batch_method": "sprite_sheet"
+  }
+}

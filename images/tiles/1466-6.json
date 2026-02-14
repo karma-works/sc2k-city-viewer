@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "green",
+    "blue",
+    "platform",
+    "slanted"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1466-6.png",
+    "hash": "18e89430cd28f223fcd5e21cbc8d220d",
+    "generated_at": "2026-02-13 21:18:42",
+    "batch_method": "sprite_sheet"
+  }
+}

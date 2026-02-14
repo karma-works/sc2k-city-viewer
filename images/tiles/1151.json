@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "cityhall",
+    "government",
+    "monument",
+    "building",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1151.png",
+    "hash": "3df586886446f743e23348546c2f0068",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

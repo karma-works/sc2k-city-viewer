@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "plants",
+    "reeds",
+    "marsh",
+    "foliage",
+    "nature"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1493.png",
+    "hash": "6e5a396321c740c3cd029b057d03f72c",
+    "generated_at": "2026-02-13 21:18:54",
+    "batch_method": "sprite_sheet"
+  }
+}

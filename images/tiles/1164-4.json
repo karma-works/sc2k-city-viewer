@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "factory",
+    "grey",
+    "smoke",
+    "industrial",
+    "modern"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1164-4.png",
+    "hash": "d0624b1e79896b6851b11e150d9297be",
+    "generated_at": "2026-02-13 21:09:09",
+    "batch_method": "sprite_sheet"
+  }
+}

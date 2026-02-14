@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "dirt",
+    "ground",
+    "brown",
+    "texture",
+    "earth"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1004.png",
+    "hash": "172585ab50f57a74d6f3fadc933b7aea",
+    "generated_at": "2026-02-13 21:08:06",
+    "batch_method": "sprite_sheet"
+  }
+}

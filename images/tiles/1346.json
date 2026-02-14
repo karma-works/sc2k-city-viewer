@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "blue",
+    "plane",
+    "top-down",
+    "diamond",
+    "frame"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1346.png",
+    "hash": "5f8b0bd3fdac0c92cc5d9651b2470c85",
+    "generated_at": "2026-02-13 21:12:00",
+    "batch_method": "sprite_sheet"
+  }
+}

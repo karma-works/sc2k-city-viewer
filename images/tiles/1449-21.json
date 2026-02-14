@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "blue",
+    "isometric",
+    "platform",
+    "wireframe",
+    "faded"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1449-21.png",
+    "hash": "babe07ec9ad16eb8ce9d18ee8da00f09",
+    "generated_at": "2026-02-13 21:17:18",
+    "batch_method": "sprite_sheet"
+  }
+}

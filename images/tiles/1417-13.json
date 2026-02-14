@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "diagonal",
+    "track",
+    "gray",
+    "blue",
+    "segment"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1417-13.png",
+    "hash": "6bb3a35afc3455a4c4e9fb562f626328",
+    "generated_at": "2026-02-13 21:14:26",
+    "batch_method": "sprite_sheet"
+  }
+}

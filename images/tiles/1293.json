@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "grass",
+    "green",
+    "dots",
+    "isometric",
+    "terrain"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1293.png",
+    "hash": "2f62ae27f85e3a92b1f6e5c2edd47df1",
+    "generated_at": "2026-02-13 21:11:39",
+    "batch_method": "sprite_sheet"
+  }
+}

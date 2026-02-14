@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "bridge",
+    "road",
+    "overpass",
+    "highway",
+    "gray"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1037.png",
+    "hash": "436b9a53799074814883ef2e15e84ce3",
+    "generated_at": "2026-02-13 21:08:06",
+    "batch_method": "sprite_sheet"
+  }
+}

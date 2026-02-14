@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "building",
+    "white",
+    "blue",
+    "modern",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1373.png",
+    "hash": "9ee4b0c02a1157dc3d7e3530b0cbaf83",
+    "generated_at": "2026-02-13 21:12:23",
+    "batch_method": "sprite_sheet"
+  }
+}

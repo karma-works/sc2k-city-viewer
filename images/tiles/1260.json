@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "terrain",
+    "slope",
+    "rock",
+    "stone",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1260.png",
+    "hash": "55d5e7300a5d76234d4b442a6cd0466e",
+    "generated_at": "2026-02-13 21:09:52",
+    "batch_method": "sprite_sheet"
+  }
+}

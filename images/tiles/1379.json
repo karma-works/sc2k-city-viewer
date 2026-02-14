@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "monster",
+    "sea-serpent",
+    "green",
+    "water",
+    "creature"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1379.png",
+    "hash": "a5f00634fe212bc548a305e8f1aee115",
+    "generated_at": "2026-02-13 21:12:23",
+    "batch_method": "sprite_sheet"
+  }
+}

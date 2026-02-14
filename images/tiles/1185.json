@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "parking",
+    "garage",
+    "pixel",
+    "isometric",
+    "building"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1185.png",
+    "hash": "73db48a94d0f663cca54191244e862a1",
+    "generated_at": "2026-02-13 21:24:33"
+  }
+}

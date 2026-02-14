@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "blue",
+    "cross",
+    "structure",
+    "beams"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1467-21.png",
+    "hash": "d031cc2bc235fdcdedf8ccdf13bb601f",
+    "generated_at": "2026-02-13 21:18:42",
+    "batch_method": "sprite_sheet"
+  }
+}

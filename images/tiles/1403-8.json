@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "diagonal",
+    "parallel",
+    "lines",
+    "blue",
+    "grey"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1403-8.png",
+    "hash": "9101fd3fd84124993767feb67447e4be",
+    "generated_at": "2026-02-13 21:13:26",
+    "batch_method": "sprite_sheet"
+  }
+}

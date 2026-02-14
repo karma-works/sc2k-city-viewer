@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "blue",
+    "vertical",
+    "bars",
+    "fading"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1424-9.png",
+    "hash": "49b62084d5333c860d23942f20a2ad27",
+    "generated_at": "2026-02-13 21:15:08",
+    "batch_method": "sprite_sheet"
+  }
+}

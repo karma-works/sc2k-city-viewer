@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "factory",
+    "brick",
+    "smoke",
+    "industrial",
+    "brown"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1162-2.png",
+    "hash": "f691ae728c5ddf014837df3cf5b0acf0",
+    "generated_at": "2026-02-13 21:09:09",
+    "batch_method": "sprite_sheet"
+  }
+}

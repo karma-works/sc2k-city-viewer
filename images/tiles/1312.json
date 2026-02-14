@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "outline",
+    "diamond",
+    "wireframe",
+    "isometric",
+    "brown"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1312.png",
+    "hash": "1e501c28efa60bfcf1300da18e4b8c2f",
+    "generated_at": "2026-02-13 21:11:39",
+    "batch_method": "sprite_sheet"
+  }
+}

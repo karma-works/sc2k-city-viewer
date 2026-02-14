@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "horizontal",
+    "blue",
+    "gray",
+    "arrow",
+    "down"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1434-3.png",
+    "hash": "12b2f097b28de32e26df3f685e04eecf",
+    "generated_at": "2026-02-13 21:15:49",
+    "batch_method": "sprite_sheet"
+  }
+}

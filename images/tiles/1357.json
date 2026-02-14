@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "orange",
+    "diamond",
+    "outline",
+    "selection",
+    "grid"
+  ],
+  "type": "ui_element",
+  "_meta": {
+    "source_file": "1357.png",
+    "hash": "d95ac1dccbf640751b6d42f9cd22baff",
+    "generated_at": "2026-02-13 21:12:00",
+    "batch_method": "sprite_sheet"
+  }
+}

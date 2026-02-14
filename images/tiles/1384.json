@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "tank",
+    "military",
+    "green",
+    "vehicle",
+    "isometric"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1384.png",
+    "hash": "6d8d052ccbd59338931e0c83cddc8c4d",
+    "generated_at": "2026-02-13 21:12:23",
+    "batch_method": "sprite_sheet"
+  }
+}

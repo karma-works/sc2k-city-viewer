@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "road",
+    "lines",
+    "diagonal",
+    "grey",
+    "white"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1092-2.png",
+    "hash": "8f0dcb8c174dd54b6226af51a822f6e3",
+    "generated_at": "2026-02-13 21:08:26",
+    "batch_method": "sprite_sheet"
+  }
+}

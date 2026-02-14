@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "hotel",
+    "resort",
+    "pool",
+    "building",
+    "isometric"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "1145.png",
+    "hash": "392dd18156e925e8773c9a798fb1dbe5",
+    "generated_at": "2026-02-13 21:08:46",
+    "batch_method": "sprite_sheet"
+  }
+}

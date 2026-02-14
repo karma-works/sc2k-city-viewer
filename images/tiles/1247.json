@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "church",
+    "cathedral",
+    "religious",
+    "building",
+    "isometric"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1247.png",
+    "hash": "609ded143b0621985168f6d5a8d7c46d",
+    "generated_at": "2026-02-13 21:09:52",
+    "batch_method": "sprite_sheet"
+  }
+}

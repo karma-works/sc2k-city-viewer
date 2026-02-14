@@ -1,0 +1,15 @@
+{
+  "keywords": [
+    "isometric",
+    "scifi",
+    "building",
+    "animation",
+    "tileset"
+  ],
+  "type": "tile",
+  "_meta": {
+    "source_file": "tilemap_3.png",
+    "hash": "3dddf1b5efce3a138f6e3f946ffcacf1",
+    "generated_at": "2026-02-13 21:19:06"
+  }
+}

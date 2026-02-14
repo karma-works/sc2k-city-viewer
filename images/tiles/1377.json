@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "bus",
+    "white",
+    "vehicle",
+    "transport",
+    "diagonal"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1377.png",
+    "hash": "53f1239921c9e434da9719ebd1f8bc52",
+    "generated_at": "2026-02-13 21:12:23",
+    "batch_method": "sprite_sheet"
+  }
+}

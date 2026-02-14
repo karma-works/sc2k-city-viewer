@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "power",
+    "lines",
+    "utility",
+    "pole",
+    "electricity"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1024.png",
+    "hash": "f0ee4e683ac0aa1c589e6082d9e1aeca",
+    "generated_at": "2026-02-13 21:08:06",
+    "batch_method": "sprite_sheet"
+  }
+}

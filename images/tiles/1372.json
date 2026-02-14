@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "building",
+    "ship",
+    "white",
+    "blue",
+    "isometric"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1372.png",
+    "hash": "6daca767da56c59b0f3f8d1435739ea4",
+    "generated_at": "2026-02-13 21:12:23",
+    "batch_method": "sprite_sheet"
+  }
+}

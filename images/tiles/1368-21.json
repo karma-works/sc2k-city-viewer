@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "helicopter",
+    "blue",
+    "red",
+    "flying",
+    "top-down"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1368-21.png",
+    "hash": "df156a287f33f2f4423404204aa2bbdd",
+    "generated_at": "2026-02-13 21:12:23",
+    "batch_method": "sprite_sheet"
+  }
+}

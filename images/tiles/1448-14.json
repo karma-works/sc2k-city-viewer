@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "blue",
+    "horizontal",
+    "lines",
+    "pyramid",
+    "faded"
+  ],
+  "type": "sprite",
+  "_meta": {
+    "source_file": "1448-14.png",
+    "hash": "1bd9c8d190af76b4beb9ffd9c627c9ef",
+    "generated_at": "2026-02-13 21:17:18",
+    "batch_method": "sprite_sheet"
+  }
+}
