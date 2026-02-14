@@ -5,13 +5,21 @@ import os
 import sys
 import json
 import argparse
-import time
+import asyncio
 import base64
 import io
 import re
+import time
 from pathlib import Path
-from typing import Optional
-from dataclasses import dataclass
+from typing import Optional, Callable
+from dataclasses import dataclass, field
+from concurrent.futures import ThreadPoolExecutor
+
+try:
+    import aiohttp
+except ImportError:
+    print("Error: aiohttp package required. Install with: pip install aiohttp")
+    sys.exit(1)
 
 try:
     import requests
@@ -41,6 +49,18 @@ class AssetDescription:
     hash: str
     width: int
     height: int
+    style_reference: Optional[str] = None
+    grid_position: Optional[tuple[int, int]] = None
+    grid_size: Optional[tuple[int, int]] = None
+
+
+@dataclass
+class BatchConfig:
+    max_concurrent: int = 5
+    style_reference_path: Optional[Path] = None
+    use_compositional: bool = False
+    grid_size: tuple[int, int] = (2, 2)
+    batch_group_by_style: bool = False
 
 
 def load_image_sizes() -> dict:
@@ -169,6 +189,289 @@ Size: {desc.width}x{desc.height} pixels, centered."""
         return None
 
 
+async def generate_image_async(
+    session: aiohttp.ClientSession,
+    api_key: str,
+    desc: AssetDescription,
+    model: str = DEFAULT_MODEL,
+    output_size: str = DEFAULT_OUTPUT_SIZE,
+    aspect_ratio: str = DEFAULT_ASPECT_RATIO,
+    style_reference_image: Optional[bytes] = None,
+) -> tuple[AssetDescription, Optional[bytes]]:
+    keywords_str = ", ".join(desc.keywords)
+
+    if desc.grid_position and desc.grid_size:
+        prompt = build_compositional_prompt(desc, keywords_str)
+    else:
+        prompt = f"""Generate a single game asset image:
+Type: {desc.asset_type}
+Description: {keywords_str}
+
+Style: Pixel art, isometric view, high contrast, transparent background.
+Size: {desc.width}x{desc.height} pixels, centered."""
+
+    payload = {
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "modalities": ["image"],
+        "image_config": {"aspect_ratio": aspect_ratio, "image_size": output_size},
+    }
+
+    if style_reference_image:
+        b64_ref = base64.b64encode(style_reference_image).decode("utf-8")
+        payload["messages"][0]["content"] = [
+            {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/png;base64,{b64_ref}"},
+            },
+            {"type": "text", "text": prompt},
+        ]
+
+    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+
+    try:
+        async with session.post(
+            OPENROUTER_API_URL,
+            headers=headers,
+            json=payload,
+            timeout=aiohttp.ClientTimeout(total=120),
+        ) as response:
+            response.raise_for_status()
+            result = await response.json()
+
+            if "choices" not in result or not result["choices"]:
+                print(f"Error: No choices in response for {desc.source_file}")
+                return (desc, None)
+
+            message = result["choices"][0].get("message", {})
+            images = message.get("images", [])
+
+            if not images:
+                print(f"Error: No images in response for {desc.source_file}")
+                return (desc, None)
+
+            image_data = images[0]
+            if isinstance(image_data, dict):
+                image_url = image_data.get("image_url", {}).get("url", "")
+            else:
+                image_url = image_data
+
+            if image_url.startswith("data:"):
+                match = re.match(r"data:image/[^;]+;base64,(.+)", image_url)
+                if match:
+                    return (desc, base64.b64decode(match.group(1)))
+
+            if image_url.startswith("http"):
+                async with session.get(
+                    image_url, timeout=aiohttp.ClientTimeout(total=30)
+                ) as img_response:
+                    img_response.raise_for_status()
+                    return (desc, await img_response.read())
+
+            print(f"Error: Unexpected image data format for {desc.source_file}")
+            return (desc, None)
+
+    except asyncio.TimeoutError:
+        print(f"Timeout generating {desc.source_file}")
+        return (desc, None)
+    except Exception as e:
+        print(f"Error generating {desc.source_file}: {e}")
+        return (desc, None)
+
+
+def build_compositional_prompt(desc: AssetDescription, keywords_str: str) -> str:
+    if not desc.grid_position or not desc.grid_size:
+        return f"""Generate a single game asset image:
+Type: {desc.asset_type}
+Description: {keywords_str}
+
+Style: Pixel art, isometric view, high contrast, transparent background.
+Size: {desc.width}x{desc.height} pixels, centered."""
+
+    row, col = desc.grid_position
+    grid_rows, grid_cols = desc.grid_size
+    total_cells = grid_rows * grid_cols
+
+    position_desc = f"cell {row * grid_cols + col + 1} of {total_cells}"
+
+    return f"""Generate a high-resolution {grid_rows}x{grid_cols} grid image showing multiple game asset variations.
+This image should contain {total_cells} different views/variations of: {keywords_str}
+Position: {position_desc} (row {row + 1}, column {col + 1})
+
+Style: Pixel art, isometric view, high contrast, transparent background.
+Each cell should be {desc.width}x{desc.height} pixels.
+Layout: Clean grid with consistent spacing between cells."""
+
+
+async def generate_batch_async(
+    api_key: str,
+    descriptions: list[AssetDescription],
+    model: str,
+    output_size: str,
+    aspect_ratio: str,
+    batch_config: BatchConfig,
+    progress_callback: Optional[Callable] = None,
+) -> list[tuple[AssetDescription, Optional[bytes]]]:
+    results = []
+    semaphore = asyncio.Semaphore(batch_config.max_concurrent)
+
+    style_reference_image = None
+    if batch_config.style_reference_path and batch_config.style_reference_path.exists():
+        with open(batch_config.style_reference_path, "rb") as f:
+            style_reference_image = f.read()
+
+    connector = aiohttp.TCPConnector(limit=batch_config.max_concurrent)
+    async with aiohttp.ClientSession(connector=connector) as session:
+
+        async def bounded_generate(
+            desc: AssetDescription,
+        ) -> tuple[AssetDescription, Optional[bytes]]:
+            async with semaphore:
+                result = await generate_image_async(
+                    session,
+                    api_key,
+                    desc,
+                    model,
+                    output_size,
+                    aspect_ratio,
+                    style_reference_image,
+                )
+                if progress_callback:
+                    progress_callback(desc, result[1] is not None)
+                return result
+
+        tasks = [bounded_generate(desc) for desc in descriptions]
+        results = await asyncio.gather(*tasks)
+
+    return results
+
+
+def generate_compositional_grid(
+    api_key: str,
+    descriptions: list[AssetDescription],
+    model: str,
+    output_size: str,
+    aspect_ratio: str,
+    grid_size: tuple[int, int],
+) -> list[tuple[AssetDescription, Optional[bytes]]]:
+    results = []
+    for i in range(0, len(descriptions), grid_size[0] * grid_size[1]):
+        batch = descriptions[i : i + grid_size[0] * grid_size[1]]
+        combined_prompt = build_combined_grid_prompt(batch, grid_size)
+
+        payload = {
+            "model": model,
+            "messages": [{"role": "user", "content": combined_prompt}],
+            "modalities": ["image"],
+            "image_config": {"aspect_ratio": aspect_ratio, "image_size": output_size},
+        }
+
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+
+        try:
+            response = requests.post(
+                OPENROUTER_API_URL, headers=headers, json=payload, timeout=180
+            )
+            response.raise_for_status()
+            result = response.json()
+
+            if "choices" in result and result["choices"]:
+                images = result["choices"][0].get("message", {}).get("images", [])
+                if images:
+                    image_data = images[0]
+                    if isinstance(image_data, dict):
+                        image_url = image_data.get("image_url", {}).get("url", "")
+                    else:
+                        image_url = image_data
+
+                    image_bytes = None
+                    if image_url.startswith("data:"):
+                        match = re.match(r"data:image/[^;]+;base64,(.+)", image_url)
+                        if match:
+                            image_bytes = base64.b64decode(match.group(1))
+                    elif image_url.startswith("http"):
+                        img_response = requests.get(image_url, timeout=30)
+                        img_response.raise_for_status()
+                        image_bytes = img_response.content
+
+                    if image_bytes:
+                        grid_images = split_grid_image(
+                            image_bytes, grid_size, batch[0].width, batch[0].height
+                        )
+                        for desc, img_bytes in zip(batch, grid_images):
+                            results.append((desc, img_bytes))
+                        continue
+
+            for desc in batch:
+                results.append((desc, None))
+
+        except Exception as e:
+            print(f"Error generating grid: {e}")
+            for desc in batch:
+                results.append((desc, None))
+
+    return results
+
+
+def build_combined_grid_prompt(
+    descriptions: list[AssetDescription], grid_size: tuple[int, int]
+) -> str:
+    items = []
+    for i, desc in enumerate(descriptions):
+        keywords_str = ", ".join(desc.keywords)
+        row, col = i // grid_size[1], i % grid_size[1]
+        items.append(f"Cell ({row + 1},{col + 1}): {keywords_str}")
+
+    items_str = "\n".join(items)
+
+    return f"""Generate a high-resolution {grid_size[0]}x{grid_size[1]} grid image.
+Each cell should contain a separate game asset:
+
+{items_str}
+
+Style: Pixel art, isometric view, high contrast.
+Layout: Clean {grid_size[0]}x{grid_size[1]} grid with consistent spacing."""
+
+
+def split_grid_image(
+    grid_bytes: bytes, grid_size: tuple[int, int], cell_width: int, cell_height: int
+) -> list[Optional[bytes]]:
+    try:
+        grid_img = Image.open(io.BytesIO(grid_bytes))
+        if grid_img.mode != "RGBA":
+            grid_img = grid_img.convert("RGBA")
+
+        total_width, total_height = grid_img.size
+        cell_actual_width = total_width // grid_size[1]
+        cell_actual_height = total_height // grid_size[0]
+
+        images = []
+        for row in range(grid_size[0]):
+            for col in range(grid_size[1]):
+                left = col * cell_actual_width
+                upper = row * cell_actual_height
+                right = left + cell_actual_width
+                lower = upper + cell_actual_height
+
+                cell_img = grid_img.crop((left, upper, right, lower))
+                if cell_width != cell_actual_width or cell_height != cell_actual_height:
+                    cell_img = cell_img.resize(
+                        (cell_width, cell_height), Image.Resampling.NEAREST
+                    )
+
+                buffer = io.BytesIO()
+                cell_img.save(buffer, format="PNG")
+                images.append(buffer.getvalue())
+
+        return images
+    except Exception as e:
+        print(f"Error splitting grid image: {e}")
+        return [None] * (grid_size[0] * grid_size[1])
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Generate images from JSON descriptions"
@@ -214,7 +517,7 @@ def main():
         "-d",
         type=float,
         default=0.5,
-        help="Delay between API calls (seconds)",
+        help="Delay between API calls (seconds, only for sync mode)",
     )
     parser.add_argument(
         "--output-size",
@@ -228,6 +531,38 @@ def main():
         "-a",
         default=DEFAULT_ASPECT_RATIO,
         help="Aspect ratio for generated images (default: 1:1)",
+    )
+    parser.add_argument(
+        "--concurrent",
+        "-c",
+        type=int,
+        default=5,
+        help="Number of concurrent API requests (default: 5)",
+    )
+    parser.add_argument(
+        "--style-reference",
+        "-S",
+        type=str,
+        default=None,
+        help="Path to style reference image for consistent styling across batch",
+    )
+    parser.add_argument(
+        "--compositional",
+        "-C",
+        action="store_true",
+        help="Use compositional grid prompting (generates multiple assets per request)",
+    )
+    parser.add_argument(
+        "--grid-size",
+        "-g",
+        type=str,
+        default="2x2",
+        help="Grid size for compositional mode (e.g., 2x2, 3x3, default: 2x2)",
+    )
+    parser.add_argument(
+        "--sync",
+        action="store_true",
+        help="Use synchronous mode (sequential requests instead of parallel)",
     )
     args = parser.parse_args()
 
@@ -248,44 +583,165 @@ def main():
     if args.limit:
         descriptions = descriptions[: args.limit]
 
-    saved = 0
-    errors = 0
+    to_process = []
     skipped = 0
-
-    for i, desc in enumerate(descriptions, 1):
+    for desc in descriptions:
         output_path = get_output_path(desc, output_dir)
-
         if not args.force and output_path.exists():
             skipped += 1
-            continue
+        else:
+            to_process.append(desc)
 
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        print(
-            f"[{i}/{len(descriptions)}] Generating: {desc.source_file} ({desc.width}x{desc.height})..."
+    if skipped > 0:
+        print(f"Skipping {skipped} existing images")
+
+    if not to_process:
+        print("No images to generate")
+        return
+
+    grid_size = tuple(map(int, args.grid_size.lower().split("x")))
+    grid_size = (grid_size[0], grid_size[1]) if len(grid_size) == 2 else (2, 2)
+    style_ref_path = Path(args.style_reference) if args.style_reference else None
+
+    batch_config = BatchConfig(
+        max_concurrent=args.concurrent,
+        style_reference_path=style_ref_path,
+        use_compositional=args.compositional,
+        grid_size=grid_size,
+    )
+
+    saved = 0
+    errors = 0
+
+    if args.compositional:
+        print(f"Using compositional grid mode ({grid_size[0]}x{grid_size[1]})...")
+        for i, desc in enumerate(to_process):
+            desc.grid_size = grid_size
+            desc.grid_position = (i // grid_size[1], i % grid_size[1])
+
+        results = generate_compositional_grid(
+            args.api_key,
+            to_process,
+            args.model,
+            args.output_size,
+            args.aspect_ratio,
+            grid_size,
         )
 
-        image_bytes = generate_image(
-            args.api_key, desc, args.model, args.output_size, args.aspect_ratio
-        )
+        for desc, image_bytes in results:
+            if image_bytes:
+                output_path = get_output_path(desc, output_dir)
+                output_path.parent.mkdir(parents=True, exist_ok=True)
+                try:
+                    img = Image.open(io.BytesIO(image_bytes))
+                    if img.mode != "RGBA":
+                        img = img.convert("RGBA")
+                    img.save(output_path, "PNG")
+                    saved += 1
+                    print(f"  Saved: {output_path}")
+                except Exception as e:
+                    print(f"  Error saving {desc.source_file}: {e}")
+                    errors += 1
+            else:
+                errors += 1
 
-        if not image_bytes:
-            print(f"  Failed")
-            errors += 1
-            continue
+    elif args.sync:
+        print(f"Using synchronous mode with {args.delay}s delay...")
+        for i, desc in enumerate(to_process, 1):
+            output_path = get_output_path(desc, output_dir)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            print(
+                f"[{i}/{len(to_process)}] Generating: {desc.source_file} ({desc.width}x{desc.height})..."
+            )
 
-        try:
-            img = Image.open(io.BytesIO(image_bytes))
-            if img.mode != "RGBA":
-                img = img.convert("RGBA")
-            img.save(output_path, "PNG")
-            saved += 1
-            print(f"  Saved: {output_path}")
-        except Exception as e:
-            print(f"  Error saving: {e}")
-            errors += 1
+            image_bytes = generate_image(
+                args.api_key, desc, args.model, args.output_size, args.aspect_ratio
+            )
 
-        if args.delay > 0:
-            time.sleep(args.delay)
+            if image_bytes:
+                try:
+                    img = Image.open(io.BytesIO(image_bytes))
+                    if img.mode != "RGBA":
+                        img = img.convert("RGBA")
+                    img.save(output_path, "PNG")
+                    saved += 1
+                    print(f"  Saved: {output_path}")
+                except Exception as e:
+                    print(f"  Error saving: {e}")
+                    errors += 1
+            else:
+                print(f"  Failed")
+                errors += 1
+
+            if args.delay > 0 and i < len(to_process):
+                time.sleep(args.delay)
+    else:
+        print(f"Using async mode with {args.concurrent} concurrent requests...")
+
+        completed = [0]
+        saved_count = [0]
+        errors_count = [0]
+        total = len(to_process)
+
+        async def save_and_report(
+            desc: AssetDescription, image_bytes: Optional[bytes]
+        ) -> bool:
+            completed[0] += 1
+            if not image_bytes:
+                print(f"[{completed[0]}/{total}] ✗ {desc.source_file}")
+                errors_count[0] += 1
+                return False
+
+            output_path = get_output_path(desc, output_dir)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                img = Image.open(io.BytesIO(image_bytes))
+                if img.mode != "RGBA":
+                    img = img.convert("RGBA")
+                img.save(output_path, "PNG")
+                saved_count[0] += 1
+                print(f"[{completed[0]}/{total}] ✓ {desc.source_file} → {output_path}")
+                return True
+            except Exception as e:
+                print(
+                    f"[{completed[0]}/{total}] ✗ {desc.source_file} (save error: {e})"
+                )
+                errors_count[0] += 1
+                return False
+
+        async def run_async():
+            semaphore = asyncio.Semaphore(batch_config.max_concurrent)
+
+            style_reference_image = None
+            if (
+                batch_config.style_reference_path
+                and batch_config.style_reference_path.exists()
+            ):
+                with open(batch_config.style_reference_path, "rb") as f:
+                    style_reference_image = f.read()
+
+            connector = aiohttp.TCPConnector(limit=batch_config.max_concurrent)
+            async with aiohttp.ClientSession(connector=connector) as session:
+
+                async def bounded_generate_and_save(desc: AssetDescription):
+                    async with semaphore:
+                        _, image_bytes = await generate_image_async(
+                            session,
+                            args.api_key,
+                            desc,
+                            args.model,
+                            args.output_size,
+                            args.aspect_ratio,
+                            style_reference_image,
+                        )
+                        await save_and_report(desc, image_bytes)
+
+                tasks = [bounded_generate_and_save(desc) for desc in to_process]
+                await asyncio.gather(*tasks)
+
+        asyncio.run(run_async())
+        saved = saved_count[0]
+        errors = errors_count[0]
 
     print(f"\n{'=' * 50}")
     print(f"Completed: {saved} saved, {skipped} skipped, {errors} errors")
