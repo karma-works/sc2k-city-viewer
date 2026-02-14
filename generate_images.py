@@ -31,7 +31,7 @@ except ImportError:
     sys.exit(1)
 
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
-DEFAULT_MODEL = "google/gemini-2.5-flash-preview"
+DEFAULT_MODEL = "google/gemini-2.5-flash-image"
 GRID_SIZE = 10
 CELL_SIZE = 64
 PADDING = 20
@@ -99,6 +99,29 @@ def load_json_descriptions(images_dir: str) -> list[AssetDescription]:
     return sorted(descriptions, key=lambda x: (x.width, x.height, x.json_path))
 
 
+def group_by_size(
+    descriptions: list[AssetDescription],
+) -> dict[tuple[int, int], list[AssetDescription]]:
+    groups: dict[tuple[int, int], list[AssetDescription]] = {}
+    for desc in descriptions:
+        key = (desc.width, desc.height)
+        if key not in groups:
+            groups[key] = []
+        groups[key].append(desc)
+    return groups
+
+
+SIZE_THRESHOLD = 128
+
+
+def categorize_by_size(
+    descriptions: list[AssetDescription], threshold: int = SIZE_THRESHOLD
+) -> tuple[list[AssetDescription], list[AssetDescription]]:
+    small = [d for d in descriptions if d.width <= threshold and d.height <= threshold]
+    big = [d for d in descriptions if d.width > threshold or d.height > threshold]
+    return small, big
+
+
 def get_output_path(desc: AssetDescription, output_dir: Optional[Path]) -> Path:
     if output_dir:
         rel_path = desc.json_path.relative_to(desc.json_path.parents[-1])
@@ -116,19 +139,21 @@ def build_sprite_sheet_prompt(
 
     assets_text = "\n".join(asset_list)
 
-    return f"""Generate a {GRID_SIZE}x{GRID_SIZE} sprite sheet containing {len(descriptions)} unique game assets on a transparent background.
+    total_size = cell_size * GRID_SIZE + PADDING * (GRID_SIZE - 1)
+    return f"""Generate a sprite sheet containing {len(descriptions)} unique game assets on a transparent background.
 
-Each asset must be:
-- Centered within its grid cell
-- Pixel art style, isometric view
-- High contrast with clear edges
-- {cell_size}x{cell_size} pixels per cell
-- {PADDING} pixels padding between each asset
+Grid layout specifications:
+- Exactly {GRID_SIZE} columns x {GRID_SIZE} rows
+- Each cell: exactly {cell_size}x{cell_size} pixels
+- {PADDING} pixels gap between cells (no edge padding)
+- Total canvas size: {total_size}x{total_size} pixels
+- Assets centered within their cells
+- Grid starts at pixel (0,0) - no margins
 
-Assets to generate:
-{assets_text}
+Style: Pixel art, isometric view, high contrast with clear edges.
 
-Arrange these in a clean grid layout, left-to-right, top-to-bottom. Each cell should contain a single asset matching its description."""
+Assets to generate (arranged left-to-right, top-to-bottom):
+{assets_text}"""
 
 
 def generate_sprite_sheet(
@@ -211,14 +236,17 @@ def split_sprite_sheet(
             sheet = sheet.convert("RGBA")
 
         images = []
-        actual_cell_size = cell_size + padding
+        total_grid_size = cell_size * GRID_SIZE + padding * (GRID_SIZE - 1)
+        sheet_width, sheet_height = sheet.size
+        offset_x = (sheet_width - total_grid_size) // 2
+        offset_y = (sheet_height - total_grid_size) // 2
 
         for idx in range(count):
             row = idx // GRID_SIZE
             col = idx % GRID_SIZE
 
-            x = col * actual_cell_size + padding // 2
-            y = row * actual_cell_size + padding // 2
+            x = offset_x + col * (cell_size + padding)
+            y = offset_y + row * (cell_size + padding)
 
             cell = sheet.crop((x, y, x + cell_size, y + cell_size))
             images.append(cell)
@@ -248,13 +276,13 @@ def process_batch(
     if not need_process:
         return 0, 0
 
-    # Use fixed CELL_SIZE for generation
+    cell_size = need_process[0].width
     print(
-        f"Generating sprite sheet for {len(need_process)} assets..."
+        f"Generating sprite sheet for {len(need_process)} assets ({cell_size}x{cell_size})..."
     )
 
     image_bytes = generate_sprite_sheet(
-        api_key, need_process, CELL_SIZE, model, output_size, aspect_ratio
+        api_key, need_process, cell_size, model, output_size, aspect_ratio
     )
 
     if not image_bytes:
@@ -262,7 +290,7 @@ def process_batch(
         return 0, 1
 
     print("Splitting sprite sheet into individual images...")
-    images = split_sprite_sheet(image_bytes, len(need_process), CELL_SIZE)
+    images = split_sprite_sheet(image_bytes, len(need_process), cell_size)
 
     if len(images) != len(need_process):
         print(f"Warning: Expected {len(need_process)} images, got {len(images)}")
@@ -276,16 +304,59 @@ def process_batch(
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
         try:
-            img = images[i]
-            if img.width != desc.width or img.height != desc.height:
-                img = img.resize((desc.width, desc.height), Image.Resampling.LANCZOS)
-            img.save(output_path, "PNG")
+            images[i].save(output_path, "PNG")
             saved += 1
             print(f"Saved: {output_path} ({desc.width}x{desc.height})")
         except Exception as e:
             print(f"Error saving {output_path}: {e}")
 
     return saved, 0
+
+
+def process_individual(
+    api_key: str,
+    descriptions: list[AssetDescription],
+    output_dir: Optional[Path],
+    force: bool,
+    model: str = DEFAULT_MODEL,
+    output_size: str = DEFAULT_OUTPUT_SIZE,
+    aspect_ratio: str = DEFAULT_ASPECT_RATIO,
+    delay: float = 0.5,
+) -> tuple[int, int]:
+    saved = 0
+    errors = 0
+
+    for desc in descriptions:
+        output_path = get_output_path(desc, output_dir)
+        if not force and output_path.exists():
+            continue
+
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        print(f"Generating: {desc.source_file} ({desc.width}x{desc.height})...")
+
+        image_bytes = generate_single_image(
+            api_key, desc, model, output_size, aspect_ratio
+        )
+
+        if not image_bytes:
+            print(f"Failed to generate {desc.source_file}")
+            errors += 1
+            continue
+
+        try:
+            img = Image.open(io.BytesIO(image_bytes))
+            if img.mode != "RGBA":
+                img = img.convert("RGBA")
+            img.save(output_path, "PNG")
+            saved += 1
+            print(f"Saved: {output_path}")
+        except Exception as e:
+            print(f"Error saving {output_path}: {e}")
+            errors += 1
+
+        time.sleep(delay)
+
+    return saved, errors
 
 
 def generate_single_image(
@@ -451,38 +522,63 @@ def main():
     if args.limit:
         descriptions = descriptions[: args.limit]
 
+    small, big = categorize_by_size(descriptions, SIZE_THRESHOLD)
+    print(f"Small assets (≤{SIZE_THRESHOLD}x{SIZE_THRESHOLD}): {len(small)}")
+    print(f"Big assets (>{SIZE_THRESHOLD}x{SIZE_THRESHOLD}): {len(big)}")
+
     if args.test:
-        descriptions = descriptions[: args.batch_size * 2]
-        print(f"Test mode: Using {len(descriptions)} descriptions")
+        small = small[: args.batch_size * 2]
+        big = big[:2]
+        print(f"Test mode: Using {len(small)} small + {len(big)} big")
 
     total_saved = 0
     api_calls = 0
     errors = 0
-    batch_num = 0
 
-    for i in range(0, len(descriptions), args.batch_size):
-        batch = descriptions[i : i + args.batch_size]
-        batch_num += 1
-        total_batches = (len(descriptions) + args.batch_size - 1) // args.batch_size
+    small_groups = group_by_size(small)
+    for size_key, group in small_groups.items():
+        size_str = f"{size_key[0]}x{size_key[1]}"
+        print(f"\nProcessing {len(group)} assets of size {size_str}...")
 
-        print(f"\nBatch {batch_num}/{total_batches}: Processing {len(batch)} assets...")
+        for i in range(0, len(group), args.batch_size):
+            batch = group[i : i + args.batch_size]
+            batch_num = i // args.batch_size + 1
+            total_batches = (len(group) + args.batch_size - 1) // args.batch_size
 
-        saved, err = process_batch(
+            print(f"  Sprite sheet {batch_num}/{total_batches}...")
+
+            saved, err = process_batch(
+                args.api_key,
+                batch,
+                output_dir,
+                args.force,
+                args.model,
+                args.output_size,
+                args.aspect_ratio,
+            )
+
+            total_saved += saved
+            errors += err
+            api_calls += 1
+
+            if args.delay > 0 and i + args.batch_size < len(group):
+                time.sleep(args.delay)
+
+    if big:
+        print(f"\nProcessing {len(big)} big assets individually...")
+        saved, err = process_individual(
             args.api_key,
-            batch,
+            big,
             output_dir,
             args.force,
             args.model,
             args.output_size,
             args.aspect_ratio,
+            args.delay,
         )
-
         total_saved += saved
         errors += err
-        api_calls += 1
-
-        if args.delay > 0 and i + args.batch_size < len(descriptions):
-            time.sleep(args.delay)
+        api_calls += len(big)
 
     print(f"\n{'=' * 50}")
     print(f"Completed: {total_saved} images saved")
