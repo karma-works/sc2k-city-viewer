@@ -2,7 +2,21 @@
 SC2K City Viewer - An AI-powered open source city viewer based on OpenSC2K
 
 ## Overview
-This project is an open source city viewer for SimCity 2000 that replaces the proprietary game assets with AI-generated ones, making it both functional and fully open source.
+The aim of this project is an open source city viewer for SimCity 2000 that replaces the proprietary game assets with AI-generated ones, making it both functional and fully open source.
+
+Current project state: HIGLY EXPERIMENTAL
+Take a look at the screenshot yourself
+![](image.png)
+
+What was done so far
+- Converted the Electron-Version into a pure web version, inklusive sql db.
+- Moved the whole project from JavaScript to Typescript
+- AI generated descriptions for all original game assets
+- AI generated assets based on the image descriptions
+
+Until know the result doesn't resemble a real city yet, because the AI fails to generate a consistent sprite set.
+Main components are the python Scripts in this project.
+
 
 The project is based on OpenSC2K, an attempt to reimplement Sim City 2000 in open source. OpenSC2K development stalled, so it does not have the real simulation yet, only a city viewer. The city viewer from the original implementation only works if the user copies proprietary assets from the game copy into OpenSC2K. Some repos also include the original Sim City 2000 assets which is illegal.
 
