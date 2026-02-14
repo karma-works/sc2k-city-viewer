@@ -76,7 +76,7 @@ export class OpenSC2K {
       return;
     }
 
-    console.log('Initializing OpenSC2K Web...');
+    console.log('Initializing SC2K City Viewer...');
 
     try {
       await this.data.init();
@@ -128,10 +128,10 @@ export class OpenSC2K {
       this.graphics.startAnimationFrames();
       this.startGame();
 
-      console.log('OpenSC2K initialized successfully');
+      console.log('SC2K City Viewer initialized successfully');
 
     } catch (error) {
-      console.error('Failed to initialize OpenSC2K:', error);
+      console.error('Failed to initialize SC2K City Viewer:', error);
       throw error;
     }
   }

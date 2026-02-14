@@ -1,8 +1,8 @@
-# OpenSC2K Web Migration Plan
+# SC2K City Viewer Web Migration Plan
 
 ## Executive Summary
 
-This document outlines the plan to convert OpenSC2K from an Electron desktop application to a pure web-based solution that can be embedded in web pages.
+This document outlines the plan to convert SC2K City Viewer from an Electron desktop application to a pure web-based solution that can be embedded in web pages.
 
 ## Current Architecture Analysis
 
@@ -574,12 +574,12 @@ declare module 'sql.js' {
    ```typescript
    // Save to IndexedDB
    const dbData = this.db.export();
-   localStorage.setItem('opensc2k_db', 
+   localStorage.setItem('sc2k_viewer_db', 
      Array.from(dbData).join(',')
    );
    
    // Load from IndexedDB
-   const saved = localStorage.getItem('opensc2k_db');
+   const saved = localStorage.getItem('sc2k_viewer_db');
    if (saved) {
      const bytes = new Uint8Array(saved.split(',').map(Number));
      this.db = new this.SQL.Database(bytes);
@@ -602,7 +602,7 @@ declare module 'sql.js' {
 #### 3.1 New Project Structure
 
 ```
-opensc2k-web/
+sc2k-city-viewer-web/
 ├── index.html              # Main HTML file
 ├── css/
 │   └── styles.css          # Extract inline styles
@@ -668,13 +668,13 @@ Create a clean API for embedding in web pages:
 <html>
 <head>
   <title>My SimCity Viewer</title>
-  <script src="opensc2k/opensc2k.js"></script>
+  <script src="sc2k-viewer/opensc2k.js"></script>
 </head>
 <body>
   <div id="sc2k-container" style="width: 800px; height: 600px;"></div>
   
   <script>
-    // Initialize OpenSC2K in container
+    // Initialize SC2K City Viewer in container
     const viewer = new OpenSC2K({
       container: 'sc2k-container',
       cityUrl: 'cities/mycity.sc2',
@@ -833,7 +833,7 @@ Create a clean API for embedding in web pages:
 - [ ] `src/utils/featureDetection.ts` → Browser capability detection
 - [ ] `src/types/index.ts` → Core type definitions
 - [ ] `src/types/sql-js.d.ts` → Type definitions for sql.js
-- [ ] `src/opensc2k.ts` → Public embedding API
+- [ ] `src/sc2kViewer.ts` → Public embedding API
 - [ ] `css/styles.css` → Extract inline styles
 - [ ] `README-WEB.md` → Web-specific documentation
 
@@ -871,7 +871,7 @@ Here's the minimal code needed for a working web version:
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OpenSC2K Web</title>
+  <title>SC2K City Viewer Web</title>
   <style>
     body { margin: 0; background: #371700; overflow: hidden; }
     canvas { position: absolute; top: 0; left: 0; }
@@ -933,7 +933,7 @@ Here's the minimal code needed for a working web version:
 
 ## Conclusion
 
-Migrating OpenSC2K to a pure web solution is feasible and involves:
+Migrating SC2K City Viewer to a pure web solution is feasible and involves:
 
 1. **Converting to TypeScript** (Phase 0) - Add strict type safety before migration
 2. **Replacing Node.js modules** with browser APIs (fetch, FileReader)
@@ -950,7 +950,7 @@ The core rendering engine (Canvas API) and game logic require minimal changes si
 4. Begin incremental migration of remaining modules
 5. Test and iterate
 
-This migration will enable OpenSC2K to be embedded in any webpage, shared via URL, and run on any device with a modern browser.
+This migration will enable SC2K City Viewer to be embedded in any webpage, shared via URL, and run on any device with a modern browser.
 
 ### Migration Summary: Before vs After
 

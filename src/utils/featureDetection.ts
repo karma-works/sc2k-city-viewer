@@ -1,4 +1,4 @@
-// Browser feature detection for OpenSC2K
+// Browser feature detection for SC2K City Viewer
 
 import type { BrowserCapabilities } from '../types/index.js';
 

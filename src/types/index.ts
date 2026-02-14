@@ -1,4 +1,4 @@
-// Core type definitions for OpenSC2K
+// Core type definitions for SC2K City Viewer
 
 // Game Configuration
 export interface GameConfig {

@@ -20,7 +20,6 @@ The asset generation process works as follows:
 
 Based on the work of:
 - **OpenSC2K** - An attempt to reimplement SimCity 2000 in open source
-  - Repository: https://github.com/karma-works/opensc2k.git
   - Credits: The original authors of OpenSC2K
 
 Original game assets were extracted from the original SimCity 2000 Special Edition CD and are NOT covered by the GNU General Public License used by this project. These assets are copyright EA / Maxis.
@@ -102,7 +101,6 @@ Based on the work of David Moews
 ## License
 OpenSC2K - An Open Source SimCity 2000 remake
 
-Copyright (C) 2018 Nicholas Ochoa
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
