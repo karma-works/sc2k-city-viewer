@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
-"""Generate images from JSON descriptions using OpenRouter API."""
+"""Generate images from JSON descriptions using fal.ai API (Flux.1 Schnell)."""
 
 import os
 import sys
 import json
 import argparse
 import asyncio
-import base64
 import io
-import math
-import re
 import time
 from pathlib import Path
 from typing import Optional, Callable
@@ -34,9 +31,20 @@ except ImportError:
     print("Error: Pillow package required. Install with: pip install Pillow")
     sys.exit(1)
 
-OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
-DEFAULT_MODEL = "google/gemini-2.5-flash-image"
+FAL_API_URL = "https://queue.fal.run/fal-ai/flux/schnell"
+FAL_POLL_INTERVAL = 1.0
+FAL_MAX_POLL_TIME = 120
+DEFAULT_MODEL = "flux-schnell"
 IMAGE_SIZES_FILE = Path("images/image_sizes.json")
+
+FAL_IMAGE_SIZES = {
+    "square_hd": (1024, 1024),
+    "square": (512, 512),
+    "portrait_4_3": (768, 1024),
+    "portrait_16_9": (576, 1024),
+    "landscape_4_3": (1024, 768),
+    "landscape_16_9": (1024, 576),
+}
 
 SC2K_STYLE_PROMPT = """STYLE REQUIREMENTS (SimCity 2000 aesthetic):
 - Dimetric projection: vertical lines remain vertical, base edges follow 2:1 pixel ratio
@@ -73,39 +81,19 @@ ASSET DESCRIPTION:
 CRITICAL: Output ONLY the asset on neutral gray background. No scene, no environment, no multiple angles. Center the {width}x{height} asset precisely."""
 
 
-VALID_ASPECT_RATIOS = [
-    "1:1",
-    "2:3",
-    "3:2",
-    "3:4",
-    "4:3",
-    "4:5",
-    "5:4",
-    "9:16",
-    "16:9",
-    "21:9",
-]
-
-
-def calculate_output_config(width: int, height: int) -> tuple[str, str]:
-    max_dim = max(width, height)
-    if max_dim <= 512:
-        output_size = "1K"
-    elif max_dim <= 1024:
-        output_size = "2K"
-    else:
-        output_size = "4K"
-
-    def parse_ratio(ratio: str) -> float:
-        parts = ratio.split(":")
-        return int(parts[0]) / int(parts[1])
-
+def calculate_output_config(width: int, height: int) -> str:
     actual_ratio = width / height if height > 0 else 1.0
-    valid_ratios = [(r, parse_ratio(r)) for r in VALID_ASPECT_RATIOS]
-    closest = min(valid_ratios, key=lambda x: abs(x[1] - actual_ratio))
-    aspect_ratio = closest[0]
+    best_size = "square"
+    best_diff = float("inf")
 
-    return output_size, aspect_ratio
+    for size_name, (sw, sh) in FAL_IMAGE_SIZES.items():
+        size_ratio = sw / sh
+        diff = abs(actual_ratio - size_ratio)
+        if diff < best_diff:
+            best_diff = diff
+            best_size = size_name
+
+    return best_size
 
 
 @dataclass
@@ -192,56 +180,79 @@ def generate_image(
     model: str = DEFAULT_MODEL,
 ) -> Optional[bytes]:
     keywords_str = ", ".join(desc.keywords)
-    output_size, aspect_ratio = calculate_output_config(desc.width, desc.height)
-
+    image_size = calculate_output_config(desc.width, desc.height)
     prompt = build_sc2k_prompt(keywords_str, desc.asset_type, desc.width, desc.height)
 
     payload = {
-        "model": model,
-        "messages": [{"role": "user", "content": prompt}],
-        "modalities": ["image"],
-        "image_config": {"aspect_ratio": aspect_ratio, "image_size": output_size},
+        "prompt": prompt,
+        "image_size": image_size,
+        "num_inference_steps": 4,
+        "num_images": 1,
     }
 
-    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+    headers = {"Authorization": f"Key {api_key}", "Content-Type": "application/json"}
 
     try:
-        response = requests.post(
-            OPENROUTER_API_URL, headers=headers, json=payload, timeout=120
-        )
+        response = requests.post(FAL_API_URL, headers=headers, json=payload, timeout=30)
         response.raise_for_status()
-
         result = response.json()
 
-        if "choices" not in result or not result["choices"]:
-            print(f"Error: No choices in response")
+        status_url = result.get("status_url")
+        response_url = result.get("response_url")
+
+        if not status_url or not response_url:
+            print(f"Error: Missing status_url or response_url")
+            print(f"  Response: {json.dumps(result, indent=2)[:1000]}")
             return None
 
-        message = result["choices"][0].get("message", {})
-        images = message.get("images", [])
+        poll_start = time.time()
+        while time.time() - poll_start < FAL_MAX_POLL_TIME:
+            status_response = requests.get(status_url, headers=headers, timeout=10)
+            if status_response.status_code != 200:
+                print(
+                    f"Status check error {status_response.status_code}: {status_response.text[:200]}"
+                )
+                return None
 
+            status_result = status_response.json()
+            status = status_result.get("status")
+
+            if status == "COMPLETED":
+                break
+            elif status in ("FAILED", "CANCELLED"):
+                print(f"Request {status}")
+                print(f"  Response: {json.dumps(status_result, indent=2)[:500]}")
+                return None
+
+            time.sleep(FAL_POLL_INTERVAL)
+        else:
+            print(f"Timeout after {FAL_MAX_POLL_TIME}s")
+            return None
+
+        result_response = requests.get(response_url, headers=headers, timeout=30)
+        if result_response.status_code != 200:
+            print(
+                f"Result fetch error {result_response.status_code}: {result_response.text[:200]}"
+            )
+            return None
+
+        final_result = result_response.json()
+
+        images = final_result.get("images", [])
         if not images:
             print(f"Error: No images in response")
+            print(f"  Response: {json.dumps(final_result, indent=2)[:1000]}")
             return None
 
-        image_data = images[0]
-        if isinstance(image_data, dict):
-            image_url = image_data.get("image_url", {}).get("url", "")
-        else:
-            image_url = image_data
+        image_url = images[0].get("url", "")
+        if not image_url:
+            print(f"Error: No image URL in response")
+            print(f"  Response: {json.dumps(final_result, indent=2)[:1000]}")
+            return None
 
-        if image_url.startswith("data:"):
-            match = re.match(r"data:image/[^;]+;base64,(.+)", image_url)
-            if match:
-                return base64.b64decode(match.group(1))
-
-        if image_url.startswith("http"):
-            img_response = requests.get(image_url, timeout=30)
-            img_response.raise_for_status()
-            return img_response.content
-
-        print(f"Error: Unexpected image data format")
-        return None
+        img_response = requests.get(image_url, timeout=30)
+        img_response.raise_for_status()
+        return img_response.content
 
     except requests.exceptions.RequestException as e:
         print(f"API request failed: {e}")
@@ -259,7 +270,7 @@ async def generate_image_async(
     style_reference_image: Optional[bytes] = None,
 ) -> tuple[AssetDescription, Optional[bytes]]:
     keywords_str = ", ".join(desc.keywords)
-    output_size, aspect_ratio = calculate_output_config(desc.width, desc.height)
+    image_size = calculate_output_config(desc.width, desc.height)
 
     if desc.grid_position and desc.grid_size:
         prompt = build_compositional_prompt(desc, keywords_str)
@@ -269,30 +280,20 @@ async def generate_image_async(
         )
 
     payload = {
-        "model": model,
-        "messages": [{"role": "user", "content": prompt}],
-        "modalities": ["image"],
-        "image_config": {"aspect_ratio": aspect_ratio, "image_size": output_size},
+        "prompt": prompt,
+        "image_size": image_size,
+        "num_inference_steps": 4,
+        "num_images": 1,
     }
 
-    if style_reference_image:
-        b64_ref = base64.b64encode(style_reference_image).decode("utf-8")
-        payload["messages"][0]["content"] = [
-            {
-                "type": "image_url",
-                "image_url": {"url": f"data:image/png;base64,{b64_ref}"},
-            },
-            {"type": "text", "text": prompt},
-        ]
-
-    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+    headers = {"Authorization": f"Key {api_key}", "Content-Type": "application/json"}
 
     try:
         async with session.post(
-            OPENROUTER_API_URL,
+            FAL_API_URL,
             headers=headers,
             json=payload,
-            timeout=aiohttp.ClientTimeout(total=120),
+            timeout=aiohttp.ClientTimeout(total=30),
         ) as response:
             if response.status != 200:
                 error_text = await response.text()
@@ -302,37 +303,74 @@ async def generate_image_async(
                 return (desc, None)
             result = await response.json()
 
-            if "choices" not in result or not result["choices"]:
-                print(f"Error: No choices in response for {desc.source_file}")
+        status_url = result.get("status_url")
+        response_url = result.get("response_url")
+
+        if not status_url or not response_url:
+            print(f"Error: Missing status_url or response_url for {desc.source_file}")
+            print(f"  Response: {json.dumps(result, indent=2)[:1000]}")
+            return (desc, None)
+
+        poll_start = time.time()
+        while time.time() - poll_start < FAL_MAX_POLL_TIME:
+            async with session.get(
+                status_url,
+                headers=headers,
+                timeout=aiohttp.ClientTimeout(total=10),
+            ) as status_response:
+                if status_response.status != 200:
+                    error_text = await status_response.text()
+                    print(
+                        f"Status check error {status_response.status} for {desc.source_file}: {error_text[:200]}"
+                    )
+                    return (desc, None)
+
+                status_result = await status_response.json()
+                status = status_result.get("status")
+
+                if status == "COMPLETED":
+                    break
+                elif status in ("FAILED", "CANCELLED"):
+                    print(f"Request {status} for {desc.source_file}")
+                    print(f"  Response: {json.dumps(status_result, indent=2)[:500]}")
+                    return (desc, None)
+
+                await asyncio.sleep(FAL_POLL_INTERVAL)
+        else:
+            print(f"Timeout waiting for {desc.source_file} after {FAL_MAX_POLL_TIME}s")
+            return (desc, None)
+
+        async with session.get(
+            response_url,
+            headers=headers,
+            timeout=aiohttp.ClientTimeout(total=30),
+        ) as result_response:
+            if result_response.status != 200:
+                error_text = await result_response.text()
+                print(
+                    f"Result fetch error {result_response.status} for {desc.source_file}: {error_text[:200]}"
+                )
                 return (desc, None)
 
-            message = result["choices"][0].get("message", {})
-            images = message.get("images", [])
+            final_result = await result_response.json()
 
+            images = final_result.get("images", [])
             if not images:
                 print(f"Error: No images in response for {desc.source_file}")
+                print(f"  Response: {json.dumps(final_result, indent=2)[:1000]}")
                 return (desc, None)
 
-            image_data = images[0]
-            if isinstance(image_data, dict):
-                image_url = image_data.get("image_url", {}).get("url", "")
-            else:
-                image_url = image_data
+            image_url = images[0].get("url", "")
+            if not image_url:
+                print(f"Error: No image URL in response for {desc.source_file}")
+                print(f"  Response: {json.dumps(final_result, indent=2)[:1000]}")
+                return (desc, None)
 
-            if image_url.startswith("data:"):
-                match = re.match(r"data:image/[^;]+;base64,(.+)", image_url)
-                if match:
-                    return (desc, base64.b64decode(match.group(1)))
-
-            if image_url.startswith("http"):
-                async with session.get(
-                    image_url, timeout=aiohttp.ClientTimeout(total=30)
-                ) as img_response:
-                    img_response.raise_for_status()
-                    return (desc, await img_response.read())
-
-            print(f"Error: Unexpected image data format for {desc.source_file}")
-            return (desc, None)
+            async with session.get(
+                image_url, timeout=aiohttp.ClientTimeout(total=30)
+            ) as img_response:
+                img_response.raise_for_status()
+                return (desc, await img_response.read())
 
     except asyncio.TimeoutError:
         print(f"Timeout generating {desc.source_file}")
@@ -374,8 +412,6 @@ async def generate_batch_async(
     api_key: str,
     descriptions: list[AssetDescription],
     model: str,
-    output_size: str,
-    aspect_ratio: str,
     batch_config: BatchConfig,
     progress_callback: Optional[Callable] = None,
 ) -> list[tuple[AssetDescription, Optional[bytes]]]:
@@ -418,6 +454,11 @@ def generate_compositional_grid(
     grid_size: tuple[int, int],
 ) -> list[tuple[AssetDescription, Optional[bytes]]]:
     results = []
+    headers = {
+        "Authorization": f"Key {api_key}",
+        "Content-Type": "application/json",
+    }
+
     for i in range(0, len(descriptions), grid_size[0] * grid_size[1]):
         batch = descriptions[i : i + grid_size[0] * grid_size[1]]
         combined_prompt = build_combined_grid_prompt(batch, grid_size)
@@ -426,54 +467,82 @@ def generate_compositional_grid(
         max_height = max(d.height for d in batch)
         total_width = max_width * grid_size[1]
         total_height = max_height * grid_size[0]
-        output_size, aspect_ratio = calculate_output_config(total_width, total_height)
+        image_size = calculate_output_config(total_width, total_height)
 
         payload = {
-            "model": model,
-            "messages": [{"role": "user", "content": combined_prompt}],
-            "modalities": ["image"],
-            "image_config": {"aspect_ratio": aspect_ratio, "image_size": output_size},
-        }
-
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
+            "prompt": combined_prompt,
+            "image_size": image_size,
+            "num_inference_steps": 4,
+            "num_images": 1,
         }
 
         try:
             response = requests.post(
-                OPENROUTER_API_URL, headers=headers, json=payload, timeout=180
+                FAL_API_URL, headers=headers, json=payload, timeout=30
             )
             response.raise_for_status()
             result = response.json()
 
-            if "choices" in result and result["choices"]:
-                images = result["choices"][0].get("message", {}).get("images", [])
-                if images:
-                    image_data = images[0]
-                    if isinstance(image_data, dict):
-                        image_url = image_data.get("image_url", {}).get("url", "")
-                    else:
-                        image_url = image_data
+            status_url = result.get("status_url")
+            response_url = result.get("response_url")
 
-                    image_bytes = None
-                    if image_url.startswith("data:"):
-                        match = re.match(r"data:image/[^;]+;base64,(.+)", image_url)
-                        if match:
-                            image_bytes = base64.b64decode(match.group(1))
-                    elif image_url.startswith("http"):
-                        img_response = requests.get(image_url, timeout=30)
-                        img_response.raise_for_status()
-                        image_bytes = img_response.content
+            if not status_url or not response_url:
+                print(f"Error: Missing status_url or response_url for grid")
+                print(f"  Response: {json.dumps(result, indent=2)[:500]}")
+                for desc in batch:
+                    results.append((desc, None))
+                continue
 
-                    if image_bytes:
-                        grid_images = split_grid_image(
-                            image_bytes, grid_size, batch[0].width, batch[0].height
-                        )
-                        for desc, img_bytes in zip(batch, grid_images):
-                            results.append((desc, img_bytes))
-                        continue
+            poll_start = time.time()
+            completed = False
+            while time.time() - poll_start < FAL_MAX_POLL_TIME:
+                status_response = requests.get(status_url, headers=headers, timeout=10)
+                if status_response.status_code != 200:
+                    print(f"Status check error {status_response.status_code}")
+                    break
 
+                status_result = status_response.json()
+                status = status_result.get("status")
+
+                if status == "COMPLETED":
+                    completed = True
+                    break
+                elif status in ("FAILED", "CANCELLED"):
+                    print(f"Request {status} for grid")
+                    break
+
+                time.sleep(FAL_POLL_INTERVAL)
+
+            if not completed:
+                for desc in batch:
+                    results.append((desc, None))
+                continue
+
+            result_response = requests.get(response_url, headers=headers, timeout=30)
+            if result_response.status_code != 200:
+                print(f"Result fetch error {result_response.status_code}")
+                for desc in batch:
+                    results.append((desc, None))
+                continue
+
+            final_result = result_response.json()
+            images = final_result.get("images", [])
+
+            if images:
+                image_url = images[0].get("url", "")
+                if image_url:
+                    img_response = requests.get(image_url, timeout=30)
+                    img_response.raise_for_status()
+                    image_bytes = img_response.content
+
+                    grid_images = split_grid_image(
+                        image_bytes, grid_size, batch[0].width, batch[0].height
+                    )
+                    for desc, img_bytes in zip(batch, grid_images):
+                        results.append((desc, img_bytes))
+                    continue
+
+            print(f"Error: No images in grid response")
             for desc in batch:
                 results.append((desc, None))
 
@@ -564,14 +633,14 @@ def main():
     parser.add_argument(
         "--api-key",
         "-k",
-        default=os.environ.get("OPENROUTER_API_KEY"),
-        help="OpenRouter API key (or set OPENROUTER_API_KEY env var)",
+        default=os.environ.get("FAL_KEY"),
+        help="fal.ai API key (or set FAL_KEY env var)",
     )
     parser.add_argument(
         "--model",
         "-M",
         default=DEFAULT_MODEL,
-        help=f"Model to use (default: {DEFAULT_MODEL})",
+        help=f"Model to use (default: {DEFAULT_MODEL}, only flux-schnell supported)",
     )
     parser.add_argument(
         "--output",
@@ -634,7 +703,7 @@ def main():
 
     if not args.api_key:
         print(
-            "Error: API key required. Set OPENROUTER_API_KEY environment variable or use --api-key"
+            "Error: API key required. Set FAL_KEY environment variable or use --api-key"
         )
         sys.exit(1)
 
