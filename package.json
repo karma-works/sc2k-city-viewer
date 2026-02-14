@@ -5,6 +5,7 @@
   "homepage": "https://github.com/karma-works/sc2k-city-viewer",
   "type": "module",
   "scripts": {
+    "predev": "cp -r images/tilemap/* public/images/tilemap/",
     "dev": "vite",
     "serve": "vite",
     "preview": "vite preview",
