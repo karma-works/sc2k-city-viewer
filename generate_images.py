@@ -38,26 +38,72 @@ OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 DEFAULT_MODEL = "google/gemini-2.5-flash-image"
 IMAGE_SIZES_FILE = Path("images/image_sizes.json")
 
+SC2K_STYLE_PROMPT = """STYLE REQUIREMENTS (SimCity 2000 aesthetic):
+- Dimetric projection: vertical lines remain vertical, base edges follow 2:1 pixel ratio
+- Fixed lighting: light source from TOP-LEFT, south and east faces must be in shadow
+- Muted earth-tone palette: olive greens, dusty browns, deep blues, industrial greys
+- High saturation ONLY for neon signs, lights, or zone overlays
+- Pixel art with dithering for gradients on curved surfaces
+- Micro-detailing: visible window panes, HVAC units, tiny signs/billboards
+- Soft shadows only (no harsh directional shadows)
+- Isolated on solid neutral gray background for easy extraction
+- Render as game-ready sprite asset, not a scene"""
+
+ISO_BASE_PROMPT = """TECHNICAL REQUIREMENTS:
+- Isometric dimetric view, orthographic projection, no perspective distortion
+- 3D render with flat ambient lighting, soft global illumination
+- Game asset quality: clean edges, tileable, consistent scale
+- Voxel-style grid alignment for perfect isometric angles
+- Exact pixel dimensions: {width}x{height} centered in canvas
+- Asset must be properly cropped and centered"""
+
+
+def build_sc2k_prompt(keywords: str, asset_type: str, width: int, height: int) -> str:
+    return f"""Generate a single SimCity 2000-style isometric game sprite asset.
+
+ASSET DESCRIPTION:
+- Type: {asset_type}
+- Content: {keywords}
+- Exact dimensions: {width}x{height} pixels
+
+{SC2K_STYLE_PROMPT}
+
+{ISO_BASE_PROMPT.format(width=width, height=height)}
+
+CRITICAL: Output ONLY the asset on neutral gray background. No scene, no environment, no multiple angles. Center the {width}x{height} asset precisely."""
+
+
+VALID_ASPECT_RATIOS = [
+    "1:1",
+    "2:3",
+    "3:2",
+    "3:4",
+    "4:3",
+    "4:5",
+    "5:4",
+    "9:16",
+    "16:9",
+    "21:9",
+]
+
 
 def calculate_output_config(width: int, height: int) -> tuple[str, str]:
     max_dim = max(width, height)
-    if max_dim <= 64:
-        output_size = "256x256"
-    elif max_dim <= 128:
-        output_size = "512x512"
-    elif max_dim <= 256:
-        output_size = "1024x1024"
-    elif max_dim <= 512:
+    if max_dim <= 512:
         output_size = "1K"
-    else:
+    elif max_dim <= 1024:
         output_size = "2K"
+    else:
+        output_size = "4K"
 
-    gcd = math.gcd(width, height)
-    ratio_w = width // gcd
-    ratio_h = height // gcd
-    ratio_w = min(ratio_w, 10)
-    ratio_h = min(ratio_h, 10)
-    aspect_ratio = f"{ratio_w}:{ratio_h}"
+    def parse_ratio(ratio: str) -> float:
+        parts = ratio.split(":")
+        return int(parts[0]) / int(parts[1])
+
+    actual_ratio = width / height if height > 0 else 1.0
+    valid_ratios = [(r, parse_ratio(r)) for r in VALID_ASPECT_RATIOS]
+    closest = min(valid_ratios, key=lambda x: abs(x[1] - actual_ratio))
+    aspect_ratio = closest[0]
 
     return output_size, aspect_ratio
 
@@ -148,12 +194,7 @@ def generate_image(
     keywords_str = ", ".join(desc.keywords)
     output_size, aspect_ratio = calculate_output_config(desc.width, desc.height)
 
-    prompt = f"""Generate a single game asset image:
-Type: {desc.asset_type}
-Description: {keywords_str}
-
-Style: Pixel art, isometric view, high contrast, transparent background.
-IMPORTANT: The image must be exactly {desc.width}x{desc.height} pixels, centered in the canvas."""
+    prompt = build_sc2k_prompt(keywords_str, desc.asset_type, desc.width, desc.height)
 
     payload = {
         "model": model,
@@ -223,12 +264,9 @@ async def generate_image_async(
     if desc.grid_position and desc.grid_size:
         prompt = build_compositional_prompt(desc, keywords_str)
     else:
-        prompt = f"""Generate a single game asset image:
-Type: {desc.asset_type}
-Description: {keywords_str}
-
-Style: Pixel art, isometric view, high contrast, transparent background.
-IMPORTANT: The image must be exactly {desc.width}x{desc.height} pixels, centered in the canvas."""
+        prompt = build_sc2k_prompt(
+            keywords_str, desc.asset_type, desc.width, desc.height
+        )
 
     payload = {
         "model": model,
@@ -256,7 +294,12 @@ IMPORTANT: The image must be exactly {desc.width}x{desc.height} pixels, centered
             json=payload,
             timeout=aiohttp.ClientTimeout(total=120),
         ) as response:
-            response.raise_for_status()
+            if response.status != 200:
+                error_text = await response.text()
+                print(
+                    f"API Error {response.status} for {desc.source_file}: {error_text[:500]}"
+                )
+                return (desc, None)
             result = await response.json()
 
             if "choices" not in result or not result["choices"]:
@@ -301,12 +344,7 @@ IMPORTANT: The image must be exactly {desc.width}x{desc.height} pixels, centered
 
 def build_compositional_prompt(desc: AssetDescription, keywords_str: str) -> str:
     if not desc.grid_position or not desc.grid_size:
-        return f"""Generate a single game asset image:
-Type: {desc.asset_type}
-Description: {keywords_str}
-
-Style: Pixel art, isometric view, high contrast, transparent background.
-IMPORTANT: The image must be exactly {desc.width}x{desc.height} pixels, centered in the canvas."""
+        return build_sc2k_prompt(keywords_str, desc.asset_type, desc.width, desc.height)
 
     row, col = desc.grid_position
     grid_rows, grid_cols = desc.grid_size
@@ -314,13 +352,22 @@ IMPORTANT: The image must be exactly {desc.width}x{desc.height} pixels, centered
 
     position_desc = f"cell {row * grid_cols + col + 1} of {total_cells}"
 
-    return f"""Generate a high-resolution {grid_rows}x{grid_cols} grid image showing multiple game asset variations.
-This image should contain {total_cells} different views/variations of: {keywords_str}
-Position: {position_desc} (row {row + 1}, column {col + 1})
+    return f"""Generate a {grid_rows}x{grid_cols} grid of SimCity 2000-style isometric game sprites.
 
-Style: Pixel art, isometric view, high contrast, transparent background.
-IMPORTANT: Each cell must be exactly {desc.width}x{desc.height} pixels.
-Layout: Clean grid with consistent spacing between cells."""
+GRID LAYOUT:
+- Total cells: {total_cells}
+- Current position: {position_desc} (row {row + 1}, column {col + 1})
+- Cell size: {desc.width}x{desc.height} pixels each
+
+ASSET FOR THIS CELL:
+- Type: {desc.asset_type}
+- Content: {keywords_str}
+
+{SC2K_STYLE_PROMPT}
+
+{ISO_BASE_PROMPT.format(width=desc.width, height=desc.height)}
+
+CRITICAL: Each cell contains ONE centered asset on neutral gray background. Clean grid with consistent spacing."""
 
 
 async def generate_batch_async(
@@ -447,18 +494,25 @@ def build_combined_grid_prompt(
     for i, desc in enumerate(descriptions):
         keywords_str = ", ".join(desc.keywords)
         row, col = i // grid_size[1], i % grid_size[1]
-        items.append(f"Cell ({row + 1},{col + 1}): {keywords_str}")
+        items.append(f"Cell ({row + 1},{col + 1}): {keywords_str} [{desc.asset_type}]")
 
     items_str = "\n".join(items)
 
-    return f"""Generate a high-resolution {grid_size[0]}x{grid_size[1]} grid image.
-Each cell should contain a separate game asset:
+    return f"""Generate a {grid_size[0]}x{grid_size[1]} grid of SimCity 2000-style isometric game sprites.
 
+ASSETS PER CELL:
 {items_str}
 
-Style: Pixel art, isometric view, high contrast, transparent background.
-IMPORTANT: Each cell must be exactly {max_width}x{max_height} pixels.
-Layout: Clean {grid_size[0]}x{grid_size[1]} grid with consistent spacing."""
+CELL SPECIFICATIONS:
+- Each cell: {max_width}x{max_height} pixels
+- Clean grid layout with consistent spacing
+- Each asset centered within its cell
+
+{SC2K_STYLE_PROMPT}
+
+{ISO_BASE_PROMPT.format(width=max_width, height=max_height)}
+
+CRITICAL: Output a clean {grid_size[0]}x{grid_size[1]} grid. Each cell contains ONE asset on neutral gray background."""
 
 
 def split_grid_image(
