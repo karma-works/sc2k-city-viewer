@@ -32,7 +32,7 @@ export class Data {
     console.log('Initializing sql.js...');
     
     const SQL: SqlJsResult = await initSqlJs({
-      locateFile: (file: string) => `/sql-wasm-browser.wasm`
+      locateFile: (_file: string) => `/sql-wasm-browser.wasm`
     });
     
     console.log('Loading database from:', dbUrl);
