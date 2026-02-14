@@ -24,7 +24,7 @@ export class Graphics {
 
   private tilemap: TilemapDefinition = {};
   private tilemapImages: Record<string, HTMLCanvasElement> = {};
-  private totalTilemaps: number = 4;
+  private totalTilemaps: number = 0;
   private loadedTilemaps: number = 0;
   public ready: boolean = false;
 
@@ -141,6 +141,10 @@ export class Graphics {
     this.ready = this.totalTilemaps === this.loadedTilemaps;
     if (this.ready) {
       console.log('Tilemaps Loaded');
+      const loadingEl = document.getElementById('loading');
+      if (loadingEl) {
+        loadingEl.style.display = 'none';
+      }
     }
   }
 
@@ -150,6 +154,12 @@ export class Graphics {
     try {
       const response = await fetch('/images/tilemap/tilemap.json');
       this.tilemap = await response.json();
+      
+      const sheetIndices = new Set(
+        Object.values(this.tilemap).map((t: TilemapEntry) => t.t)
+      );
+      this.totalTilemaps = Math.max(...sheetIndices) + 1;
+      console.log(`Found ${this.totalTilemaps} tilemap sheets`);
     } catch (error) {
       console.error('Failed to load tilemap.json:', error);
       return;
@@ -157,7 +167,7 @@ export class Graphics {
 
     for (let i = 0; i < this.totalTilemaps; i++) {
       const img = new Image();
-      img.src = `images/tilemap/tilemap_${i}.png`;
+      img.src = `/images/tilemap/tilemap_${i}.png`;
       img.setAttribute('tilemap_id', String(i));
       img.onload = (): void => {
         const tilemapId = img.getAttribute('tilemap_id');

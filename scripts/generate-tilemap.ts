@@ -5,7 +5,7 @@ import { join, basename } from "path";
 
 const TILES_DIR = "images/tiles";
 const OUTPUT_DIR = "images/tilemap";
-const SHEET_SIZE = 4096;
+const SHEET_SIZE = 2048;
 const PADDING = 0;
 
 interface SpriteInfo {
@@ -37,8 +37,9 @@ function parseFilename(filename: string): { id: string; frame: number } {
   const base = basename(filename, ".png");
   const match = base.match(/^(\d+)(?:-(\d+))?$/);
   if (!match) throw new Error(`Invalid filename: ${filename}`);
+  const tileId = parseInt(match[1], 10) - 1001;
   return {
-    id: match[1],
+    id: String(tileId),
     frame: match[2] ? parseInt(match[2], 10) : 0,
   };
 }
@@ -108,49 +109,42 @@ function packSprites(sprites: SpriteInfo[]): { sheets: Sheet[]; placements: Map<
   return { sheets, placements };
 }
 
-async function renderSheets(
-  sheets: Sheet[],
+async function renderAndSaveSheet(
+  sheet: Sheet,
   placements: Map<SpriteInfo, { sheet: Sheet; x: number; y: number }>
-): Promise<Map<Sheet, Buffer>> {
-  const sheetImages = new Map<Sheet, Buffer>();
-  const sheetSprites = new Map<Sheet, SpriteInfo[]>();
+): Promise<void> {
+  const composites: sharp.OverlayOptions[] = [];
+  const spritesInSheet: SpriteInfo[] = [];
 
-  for (const [sprite, { sheet }] of placements) {
-    if (!sheetSprites.has(sheet)) sheetSprites.set(sheet, []);
-    sheetSprites.get(sheet)!.push(sprite);
+  for (const [sprite, { sheet: s }] of placements) {
+    if (s === sheet) {
+      spritesInSheet.push(sprite);
+    }
   }
 
-  for (const sheet of sheets) {
-    const composites: sharp.OverlayOptions[] = [];
-    const spritesInSheet = sheetSprites.get(sheet) || [];
-
-    for (const sprite of spritesInSheet) {
-      const { x, y } = placements.get(sprite)!;
-      const buffer = await sharp(sprite.path).toBuffer();
-      composites.push({ input: buffer, left: x, top: y });
-    }
-
-    const base = sharp({
-      create: {
-        width: SHEET_SIZE,
-        height: SHEET_SIZE,
-        channels: 4,
-        background: { r: 0, g: 0, b: 0, alpha: 0 },
-      },
-    });
-
-    if (composites.length > 0) {
-      const buffer = await base.composite(composites).png().toBuffer();
-      sheetImages.set(sheet, buffer);
-    } else {
-      const buffer = await base.png().toBuffer();
-      sheetImages.set(sheet, buffer);
-    }
-
-    console.log(`Sheet ${sheet.index}: ${spritesInSheet.length} sprites`);
+  for (const sprite of spritesInSheet) {
+    const { x, y } = placements.get(sprite)!;
+    const buffer = await sharp(sprite.path).toBuffer();
+    composites.push({ input: buffer, left: x, top: y });
   }
 
-  return sheetImages;
+  const base = sharp({
+    create: {
+      width: SHEET_SIZE,
+      height: SHEET_SIZE,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    },
+  });
+
+  const filename = join(OUTPUT_DIR, `tilemap_${sheet.index}.png`);
+  if (composites.length > 0) {
+    await base.composite(composites).png().toFile(filename);
+  } else {
+    await base.png().toFile(filename);
+  }
+
+  console.log(`Sheet ${sheet.index}: ${spritesInSheet.length} sprites -> ${filename}`);
 }
 
 function buildTilemap(
@@ -185,14 +179,9 @@ async function main() {
     mkdirSync(OUTPUT_DIR, { recursive: true });
   }
 
-  console.log("Rendering sheets...");
-  const sheetImages = await renderSheets(sheets, placements);
-
-  console.log("Writing tilemap images...");
-  for (const [sheet, buffer] of sheetImages) {
-    const filename = join(OUTPUT_DIR, `tilemap_${sheet.index}.png`);
-    await sharp(buffer).toFile(filename);
-    console.log(`  Wrote ${filename}`);
+  console.log("Rendering and saving sheets...");
+  for (const sheet of sheets) {
+    await renderAndSaveSheet(sheet, placements);
   }
 
   console.log("Writing tilemap.json...");
